@@ -6,6 +6,7 @@ const path = require("path");
 const authRoutes = require("./src/routes/auth.routes.js");
 const requestRoute = require("./src/routes/requests.routes.js");
 const { connect } = require("mongoose");
+const reviewRoute = require("./src/routes/review.routes.js");
 require("dotenv").config();
 const url = process.env.URL;
 const port = process.env.PORT;
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, "uploads")));
 app.use("/api/requests", requestRoute);
 app.use("/api/books", bookRoute);
 app.use("/api/auth", authRoutes);
+app.use("/api/reviews", reviewRoute);
 
 app.get("/", async (req, res) => {
 	res.send("Hello from Node API Updated");
