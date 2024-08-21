@@ -6,7 +6,10 @@ const BookSchema = mongoose.Schema(
 			type: String,
 			required: [true, "Please enter book name"],
 		},
-
+		isbn: {
+			type: String,
+			required: false,
+		},
 		author: {
 			type: String,
 			required: [true, "Please enter author's name"],
@@ -38,6 +41,10 @@ const BookSchema = mongoose.Schema(
 		category: {
 			type: String,
 			enum: ["Romance", "Fiction", "African Fiction", "Horror", "Non-fiction"],
+		},
+		availability: {
+			type: String,
+			enum: ["Hard copy", "eBook"],
 		},
 	},
 	{
