@@ -36,5 +36,4 @@ function generateUniqueId() {
 	return prefix + digits;
 }
 
-const functions = { sendEmail, generateUniqueId };
-module.exports = functions;
+module.exports = { sendEmail, generateUniqueId };

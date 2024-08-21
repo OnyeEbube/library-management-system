@@ -8,7 +8,7 @@ const { error } = require("console");
 const user = process.env.USER;
 const pass = process.env.PASS;
 const baseUrl = process.env.FRONTEND_BASE_URL;
-const functions = require("./functions");
+const { sendEmail, generateUniqueId } = require("./functions");
 //const mailgen = require("mailgen");
 
 const AuthController = {};
