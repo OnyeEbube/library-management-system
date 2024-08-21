@@ -1,6 +1,6 @@
 const Review = require("../models/review.model");
 
-const ReviewSchema = {};
+const ReviewService = {};
 
 ReviewService.createReview = async (review) => {
 	return await Review.create(review);
