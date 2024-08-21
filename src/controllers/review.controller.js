@@ -1,4 +1,4 @@
-const { ReviewService } = require("../services");
+const { ReviewService } = require("../services/review.service");
 
 const ReviewController = {};
 
