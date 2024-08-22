@@ -15,7 +15,7 @@ const AuthController = {};
 AuthController.createUser = async (req, res) => {
 	try {
 		const uniqueId = generateUniqueId();
-		const { name, email, password, role, image } = req.body;
+		let { name, email, password, role, image } = req.body;
 		if (!image) {
 			image = "/uploads/default.jpg";
 		}
