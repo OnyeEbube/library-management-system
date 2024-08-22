@@ -59,9 +59,11 @@ AuthController.loginUser = async (req, res) => {
 			return res.status(401).json({ error: "User doesn't exist" });
 		}
 		const isPasswordMatch = await bcrypt.compare(
-			password,
-			loggedinUser.password
+			loggedinUser.password,
+			password
 		);
+		console.log(loggedinUser.password);
+		console.log(password);
 		console.log(isPasswordMatch);
 
 		if (!isPasswordMatch) {
