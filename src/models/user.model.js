@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
 		index: true, // Create an index for the uniqueId field for faster querying
 	},
 	email: { type: String, required: true },
-	password: { type: String, required: true },
+	password: { type: String, required: true, select: false },
 	image: {
 		type: String,
 		required: false,

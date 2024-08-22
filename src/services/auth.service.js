@@ -3,8 +3,7 @@ const User = require("../models/user.model");
 const UserService = {};
 
 UserService.getUser = async (filter, projection = {}) => {
-	const includePassword = Object.keys(projection).includes("password");
-	return await User.findOne(filter).select(includePassword ? {} : projection);
+	return await User.findOne(filter, projection);
 };
 
 UserService.getUserById = async (id) => {
