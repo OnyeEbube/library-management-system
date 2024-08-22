@@ -2,7 +2,7 @@ const User = require("../models/user.model");
 
 const UserService = {};
 
-UserService.getUser = async (filter, projection = {}) => {
+UserService.getUser = async (filter, projection) => {
 	return await User.findOne(filter, projection);
 };
 

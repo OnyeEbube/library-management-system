@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
 	name: String,
@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
 		index: true, // Create an index for the uniqueId field for faster querying
 	},
 	email: { type: String, required: true },
-	password: { type: String, required: true, select: false },
+	password: { type: String, required: true },
 	image: {
 		type: String,
 		required: false,
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
 	role: { type: String, enum: ["ADMIN", "USER"] },
 });
 
-userSchema.pre("save", function (next) {
+/*userSchema.pre("save", function (next) {
 	const user = this;
 	if (!user.isModified("password")) return next();
 	bcrypt.hash(user.password, 10, function (err, hash) {
@@ -34,6 +34,7 @@ userSchema.pre("save", function (next) {
 		next();
 	});
 });
+*/
 
 userSchema.index({ name: "text", email: "text" });
 

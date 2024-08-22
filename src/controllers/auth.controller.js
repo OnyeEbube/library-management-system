@@ -1,13 +1,18 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
-require("dotenv").config();
 const { error } = require("console");
 
 const baseUrl = process.env.FRONTEND_BASE_URL;
-const { sendEmail, generateUniqueId } = require("./functions");
+const {
+	sendEmail,
+	generateUniqueId,
+	hashPassword,
+	verifyPassword,
+} = require("./functions");
 //const mailgen = require("mailgen");
 
 const AuthController = {};
@@ -15,7 +20,7 @@ const AuthController = {};
 AuthController.createUser = async (req, res) => {
 	try {
 		const uniqueId = generateUniqueId();
-		let { name, email, password, role, image } = req.body;
+		let { name, email, role, image } = req.body;
 		if (!image) {
 			image = "/uploads/default.jpg";
 		}
@@ -23,11 +28,11 @@ AuthController.createUser = async (req, res) => {
 		if (existingUser) {
 			return res.status(400).json({ error: "User already exists" });
 		}
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hash = await bcrypt.hash(req.body.password, 10);
 		const createdUser = await UserService.createUser({
 			name,
 			email,
-			password: hashedPassword,
+			password: hash,
 			image,
 			role,
 			uniqueId,
@@ -52,7 +57,7 @@ AuthController.createUser = async (req, res) => {
 
 AuthController.loginUser = async (req, res) => {
 	try {
-		const { email, password } = req.body;
+		const { email } = req.body;
 
 		const loggedinUser = await UserService.getUser({ email });
 
@@ -60,18 +65,10 @@ AuthController.loginUser = async (req, res) => {
 			return res.status(401).json({ error: "User doesn't exist" });
 		}
 		const hashedPassword = loggedinUser.password;
-		// Using async/await
-		const newHashedPassword = await bcrypt.hash(password, 10);
-		console.log(newHashedPassword);
-		console.log(hashedPassword);
-		console.log(newHashedPassword === hashedPassword);
-		const isPasswordMatch = await bcrypt.compare(password, hashedPassword);
 
-		console.log(loggedinUser.password);
-		console.log(password);
-		console.log(isPasswordMatch);
+		const isMatch = await bcrypt.compare(req.body.password, hashedPassword);
 
-		if (!isPasswordMatch) {
+		if (!isMatch) {
 			return res.status(401).json({ error: "Invalid credential" });
 		}
 		const token = jwt.sign({ _id: loggedinUser._id }, process.env.SECRET_KEY, {

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const bookRoute = require("./src/routes/books.route.js");
 const express = require("express");
 const app = express();
@@ -7,7 +8,6 @@ const authRoutes = require("./src/routes/auth.routes.js");
 const requestRoute = require("./src/routes/requests.routes.js");
 const { connect } = require("mongoose");
 const reviewRoute = require("./src/routes/review.routes.js");
-require("dotenv").config();
 const url = process.env.URL;
 const port = process.env.PORT;
 const cors = require("cors");
@@ -41,6 +41,6 @@ connect(url)
 			console.log("Server is running on port 3000");
 		});
 	})
-	.catch(() => {
-		console.log("Connection failed!");
+	.catch((error) => {
+		console.log(error);
 	});
