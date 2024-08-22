@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
 		unique: true, // Ensure the uniqueId field is unique in the database
 		index: true, // Create an index for the uniqueId field for faster querying
 	},
-	email: String,
-	password: String,
+	email: { type: String, required: true },
+	password: { type: String, required: true },
 	image: {
 		type: String,
 		required: false,
@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre("save", function (next) {
 	const user = this;
+	if (!user.isModified("password")) return next();
 	bcrypt.hash(user.password, 10, function (err, hash) {
 		if (err) {
 			return next(err);
