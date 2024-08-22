@@ -10,8 +10,15 @@ const reviewRoute = require("./src/routes/review.routes.js");
 require("dotenv").config();
 const url = process.env.URL;
 const port = process.env.PORT;
+const cors = require("cors");
 
 // middleware
+app.use(
+	cors(/*{
+		origin: "http://localhost:5173",
+		credentials: true,
+	}*/)
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
