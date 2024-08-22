@@ -55,6 +55,7 @@ AuthController.loginUser = async (req, res) => {
 		const { email, password } = req.body;
 
 		const loggedinUser = await UserService.getUser({ email });
+		const hashedPassword = loggedinUser.password;
 		if (!loggedinUser) {
 			return res.status(401).json({ error: "User doesn't exist" });
 		}
