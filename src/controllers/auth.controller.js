@@ -5,8 +5,7 @@ const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
 require("dotenv").config();
 const { error } = require("console");
-const user = process.env.USER;
-const pass = process.env.PASS;
+
 const baseUrl = process.env.FRONTEND_BASE_URL;
 const { sendEmail, generateUniqueId } = require("./functions");
 //const mailgen = require("mailgen");
@@ -53,7 +52,7 @@ AuthController.createUser = async (req, res) => {
 
 AuthController.loginUser = async (req, res) => {
 	try {
-		const { email, password, role } = req.body;
+		const { email, password } = req.body;
 
 		const loggedinUser = await UserService.getUser({ email });
 		if (!loggedinUser) {

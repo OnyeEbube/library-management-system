@@ -1,4 +1,7 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+const user = process.env.USER;
+const pass = process.env.PASS;
 
 const sendEmail = async (email, message, subject = "Hello") => {
 	const transporter = nodemailer.createTransport({
