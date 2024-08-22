@@ -7,12 +7,7 @@ const { UserService } = require("../services/auth.service");
 const { error } = require("console");
 
 const baseUrl = process.env.FRONTEND_BASE_URL;
-const {
-	sendEmail,
-	generateUniqueId,
-	hashPassword,
-	verifyPassword,
-} = require("./functions");
+const { sendEmail, generateUniqueId } = require("./functions");
 //const mailgen = require("mailgen");
 
 const AuthController = {};

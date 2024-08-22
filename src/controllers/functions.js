@@ -40,25 +40,4 @@ function generateUniqueId() {
 	return prefix + digits;
 }
 
-async function hashPassword(password) {
-	try {
-		const salt = bcrypt.genSaltSync(10);
-		const hash = bcrypt.hash(password, salt);
-		return hash;
-	} catch (error) {
-		console.error("Error hashing password:", error);
-		throw error;
-	}
-}
-
-async function verifyPassword(password, hash) {
-	try {
-		const match = await bcrypt.compareSync(password, hash);
-		return match;
-	} catch (error) {
-		console.error("Error verifying password:", error);
-		throw error;
-	}
-}
-
-module.exports = { sendEmail, generateUniqueId, hashPassword, verifyPassword };
+module.exports = { sendEmail, generateUniqueId };
