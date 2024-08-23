@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { applyFilters } = require("../controllers/functions");
 
 const UserService = {};
 
@@ -41,6 +42,18 @@ UserService.uploadImage = async (id, image) => {
 
 UserService.deleteUser = async (id) => {
 	return await User.findByIdAndDelete(id).select("-password");
+};
+
+UserService.getFilteredMembers = async (filters, limit, skip) => {
+	let query = User.find();
+	query = applyFilters(query, filters);
+	return await query.skip(skip).limit(limit).exec();
+};
+
+UserService.countFilteredUsers = async (filters) => {
+	let query = User.find(); // Assuming `User` is your Mongoose model
+	query = applyFilters(query, filters);
+	return await query.countDocuments();
 };
 
 module.exports = { UserService };

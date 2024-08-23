@@ -15,6 +15,15 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: false,
 	},
+	numberOfBooksBorrowed: {
+		type: Number,
+		default: 0,
+	},
+	activity: {
+		type: String,
+		enum: ["ACTIVE", "BLOCKED"],
+		default: "ACTIVE",
+	},
 	resetToken: String,
 	passwordResetTokenExpiryTime: {
 		type: Date,

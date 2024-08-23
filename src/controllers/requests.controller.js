@@ -1,5 +1,7 @@
 const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
+const User = require("../models/user.model");
+const { UserService } = require("../services/auth.service");
 const RequestController = {};
 
 RequestController.getRequests = async (req, res) => {
@@ -50,6 +52,9 @@ RequestController.createRequest = async (req, res) => {
 			//console.log(existingBook);
 			return res.status(400).json({ error: "Book does not exist" });
 		}
+		if (existingBook.quantity === 0) {
+			return res.status(400).json({ error: "Book is out of stock" });
+		}
 
 		// Extract user information
 		const userId = req.user.id;
@@ -62,7 +67,6 @@ RequestController.createRequest = async (req, res) => {
 
 		// Create the request with necessary information
 		const requestPayload = {
-			...req.body,
 			userId,
 			userName,
 			bookId,
@@ -102,6 +106,17 @@ RequestController.handleRequestAction = async (req, res) => {
 		bookRequest.status = status;
 
 		await bookRequest.save();
+
+		const user = await UserService.getUserById(bookRequest.userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		if (status === "Approved") {
+			user.numberOfBooksBorrowed += 1;
+		} else if (status === "Rejected") {
+			user.numberOfBooksBorrowed = user.numberOfBooksBorrowed;
+		}
+
+		await user.save();
 
 		res.status(200).json({
 			message: `Request ${status.toLowerCase()} successfully`,

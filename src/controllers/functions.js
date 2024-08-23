@@ -40,4 +40,34 @@ function generateUniqueId() {
 	return prefix + digits;
 }
 
-module.exports = { sendEmail, generateUniqueId };
+const applyFilters = (query, filters) => {
+	if (filters.dateRange) {
+		query = query
+			.where("date")
+			.gte(filters.dateRange.from)
+			.lte(filters.dateRange.to);
+	}
+	if (filters.activity) {
+		query = query.where("activity").equals(filters.activity);
+	}
+	if (filters.actions) {
+		query = query.where("actions").equals(filters.actions);
+	}
+	if (filters.activity) {
+		query = query.where("bookName").equals(filters.bookName);
+	}
+	if (filters.numberOfBooksBorrowed) {
+		query = query
+			.where("numberOfBooksBorrowed")
+			.equals(filters.numberOfBooksBorrowed);
+	}
+	if (filters.status) {
+		query = query.where("MemberId").equals(filters.userId);
+	}
+	if (filters.memberName) {
+		query = query.where("memberName").equals(filters.memberName);
+	}
+	return query;
+};
+
+module.exports = { sendEmail, generateUniqueId, applyFilters };

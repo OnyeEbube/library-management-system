@@ -242,17 +242,45 @@ AuthController.verifyToken = async (req, res) => {
 };
 
 AuthController.resetPassword = async (req, res) => {
-	const { email } = req.body;
-	const { password } = req.body;
-	//const { id } = user;
-	const hashedPassword = await bcrypt.hash(password, 10);
-	UserService.updateUser(email, { password: hashedPassword });
-	res.status(200).json({ message: "Password reset successful" });
-	sendEmail(
-		email,
-		"Password reset successful",
-		"Your password has been reset successfully"
-	);
+	try {
+		const { email } = req.body;
+		const { password } = req.body;
+		//const { id } = user;
+		const hashedPassword = await bcrypt.hash(password, 10);
+		UserService.updateUser(email, { password: hashedPassword });
+		res.status(200).json({ message: "Password reset successful" });
+		sendEmail(
+			email,
+			"Password reset successful",
+			"Your password has been reset successfully"
+		);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+AuthController.getFilteredMembers = async (req, res) => {
+	try {
+		const filters = req.query;
+		const limit = req.query.limit || 5;
+		const page = req.query.page || 1;
+		const skip = (page - 1) * limit;
+		const totalUsers = await UserService.countFilteredMembers(filters); // count total books
+		const totalPages = Math.ceil(totalUsers / limit);
+		const users = await UserService.getFilteredMembers(filters, limit, skip);
+
+		res.status(200).json({
+			users,
+			pagination: {
+				totalUsers,
+				totalPages,
+				currentPage: page,
+				limit,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
 };
 
 module.exports = { AuthController };
