@@ -20,7 +20,7 @@ router.get("/:id", AuthController.getFilteredMembers);
 //router.get("/count", AuthController.countUsers);
 router.put("/:userId/:bookId/favorites", AuthController.addToFavorites);
 router.delete("/:userId/:bookId/favorites", AuthController.removeFromFavorites);
-router.get("/logout", AuthController.logoutUser);
+//router.get("/logout", AuthController.logoutUser);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
 router.post("/uploads/:id", verifyUser, AuthController.uploadImage);
 router.get("/search", AuthController.searchMembers);

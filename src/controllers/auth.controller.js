@@ -312,7 +312,7 @@ AuthController.removeFromFavorites = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
-
+/*
 AuthController.logout = async (req, res) => {
 	try {
 		const { id } = req.user;
@@ -326,5 +326,6 @@ AuthController.logout = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
+*/
 
 module.exports = { AuthController };

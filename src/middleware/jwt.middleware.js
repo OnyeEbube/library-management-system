@@ -63,7 +63,7 @@ const verifyUser = (req, res, next) => {
 		const loggedInUserId = decoded._id;
 
 		// Get the user ID from the request parameters
-		const { id } = req.params.id;
+		const { id } = req.params;
 
 		// Compare the IDs
 		if (id === loggedInUserId) {
