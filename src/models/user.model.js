@@ -3,6 +3,16 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
 	name: String,
+	firstName: String,
+	lastName: String,
+	dateOfBirth: Date,
+	houseAddress: String,
+	favoriteBooks: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Book",
+		},
+	],
 	uniqueId: {
 		type: String,
 		required: true,
@@ -30,6 +40,18 @@ const userSchema = new mongoose.Schema({
 		default: () => Date.now() + 900000,
 	},
 	role: { type: String, enum: ["ADMIN", "USER"] },
+
+	booksBorrowed: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Book",
+		},
+	],
+
+	phoneNumber: {
+		type: String,
+		required: false,
+	},
 });
 
 /*userSchema.pre("save", function (next) {

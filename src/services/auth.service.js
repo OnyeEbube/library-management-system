@@ -55,5 +55,19 @@ UserService.countFilteredUsers = async (filters) => {
 	query = applyFilters(query, filters);
 	return await query.countDocuments();
 };
+UserService.addToFavorites = async (userId, bookId) => {
+	return await User.findByIdAndUpdate(
+		userId,
+		{ $addToSet: { favorites: bookId } },
+		{ new: true }
+	);
+};
 
+UserService.removeFromFavorites = async (userId, bookId) => {
+	return await User.findByIdAndUpdate(
+		userId,
+		{ $pull: { favorites: bookId } },
+		{ new: true }
+	);
+};
 module.exports = { UserService };

@@ -63,14 +63,12 @@ const verifyUser = (req, res, next) => {
 		const loggedInUserId = decoded._id;
 
 		// Get the user ID from the request parameters
-		const { id } = req.params;
+		const { id } = req.params.id;
 
 		// Compare the IDs
-		if (id && loggedInUserId !== id) {
+		if (id === loggedInUserId) {
 			console.log(`loggedInUserId: ${loggedInUserId}, id: ${id}`);
-			return res
-				.status(403)
-				.json({ error: "You are not authorized to perform this action." });
+			return res.status(200).json({});
 		}
 
 		req.userId = loggedInUserId;

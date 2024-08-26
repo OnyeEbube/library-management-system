@@ -35,6 +35,24 @@ BookService.searchBook = async (query) => {
 	return await Book.find({ $text: { $search: query } });
 };
 
+BookService.getAvailableBooks = async () => {
+	return await Book.aggregate([
+		{
+			$project: {
+				availableQuantity: {
+					$subtract: ["$quantity", { $size: "$borrowedBy" }],
+				},
+			},
+		},
+		{
+			$group: {
+				_id: null,
+				totalAvailable: { $sum: "$availableQuantity" },
+			},
+		},
+	]);
+};
+
 BookService.deleteBook = async (id) => {
 	return await Book.findOneAndDelete({ _id: id });
 };

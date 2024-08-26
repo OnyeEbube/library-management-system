@@ -113,6 +113,19 @@ BookController.searchBooks = async (req, res) => {
 	}
 };
 
+BookController.getAvailableBooks = async (req, res) => {
+	try {
+		const availableBooks = await BookService.getAvailableBooks();
+		if (!availableBooks) {
+			return res.status(404).json({ message: "No books found" });
+		}
+
+		res.json({ availableBooks: availableBooks[0]?.totalAvailable || 0 });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 BookController.deleteBook = async (req, res) => {
 	try {
 		const { id } = req.params;

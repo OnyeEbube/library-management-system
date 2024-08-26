@@ -1,6 +1,5 @@
 const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
-const User = require("../models/user.model");
 const { UserService } = require("../services/auth.service");
 const RequestController = {};
 
@@ -27,6 +26,11 @@ RequestController.getRequests = async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 };
+
+/*RequestController.createSpecialRequest = async (req, res) => {
+	try {
+		const { userId, userName } = req.body;
+*/
 
 RequestController.getRequest = async (req, res) => {
 	try {
@@ -108,11 +112,18 @@ RequestController.handleRequestAction = async (req, res) => {
 		await bookRequest.save();
 
 		const user = await UserService.getUserById(bookRequest.userId);
+		const book = await BookService.findById(bookRequest.bookId);
 		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!book) return res.status(404).json({ error: "Book not found" });
 
 		if (status === "Approved") {
 			user.numberOfBooksBorrowed += 1;
-		} else if (status === "Rejected") {
+			book.borrowedBy.push(user._id);
+			book.quantity -= 1;
+			if (book.quantity === 0) {
+				book.status = "Unavailable";
+			}
+		} else if (status === "Declined") {
 			user.numberOfBooksBorrowed = user.numberOfBooksBorrowed;
 		}
 
@@ -120,6 +131,70 @@ RequestController.handleRequestAction = async (req, res) => {
 
 		res.status(200).json({
 			message: `Request ${status.toLowerCase()} successfully`,
+			bookRequest,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+RequestController.handleReturnAction = async (req, res) => {
+	try {
+		const { id } = req.params; // Get request ID from URL parameters
+
+		const bookRequest = await RequestService.findById(id);
+		if (!bookRequest)
+			return res.status(404).json({ error: "Request not found" }); // Check if the request exists
+
+		const user = await UserService.getUserById(bookRequest.userId);
+		const book = await BookService.findById(bookRequest.bookId);
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+		if (!book) {
+			return res.status(404).json({ error: "Book not found" });
+		}
+
+		// Logic to handle book return
+		bookRequest.status = "Returned";
+		user.numberOfBooksBorrowed -= 1;
+		book.quantity += 1;
+		book.borrowedBy = book.borrowedBy.filter(
+			(borrowerId) => !borrowerId.equals(user._id)
+		); // Remove user from borrowedBy array
+
+		if (book.quantity > 0) {
+			book.status = "Available"; // Update book status if there's at least one copy
+		}
+
+		await bookRequest.save();
+		await book.save();
+		await user.save();
+
+		res.status(200).json({
+			message: "Book returned successfully",
+			bookRequest,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+RequestController.cancelRequest = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const bookRequest = await RequestService.findById(id);
+		if (!bookRequest)
+			return res.status(404).json({ error: "Request not found" });
+
+		const user = await UserService.getUserById(bookRequest);
+		const book = await BookService.findById(bookRequest.bookId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!book) return res.status(404).json({ error: "Book not found" });
+		bookRequest.status = "Cancelled";
+		await bookRequest.save();
+		res.status(200).json({
+			message: "Request cancelled successfully",
 			bookRequest,
 		});
 	} catch (error) {

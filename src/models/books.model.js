@@ -10,6 +10,14 @@ const BookSchema = mongoose.Schema(
 			type: String,
 			required: false,
 		},
+		pages: {
+			type: Number,
+			required: false,
+		},
+		year: {
+			type: Number,
+			required: false,
+		},
 		author: {
 			type: String,
 			required: [true, "Please enter author's name"],
@@ -24,6 +32,12 @@ const BookSchema = mongoose.Schema(
 			type: Number,
 			required: true,
 			default: 0,
+		},
+
+		status: {
+			type: String,
+			enum: ["Available", "Unavailable"],
+			default: "Available",
 		},
 
 		/*price: {
@@ -46,6 +60,12 @@ const BookSchema = mongoose.Schema(
 			type: String,
 			enum: ["Hard copy", "eBook"],
 		},
+		borrowedBy: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+			},
+		],
 	},
 	{
 		timestamps: true,
