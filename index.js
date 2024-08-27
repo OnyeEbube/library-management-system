@@ -22,8 +22,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
-app.use(express.static("uploads", path.join(__dirname, "controllers/uploads")));
-
+const uploadsPath = path.join(__dirname, "controllers", "uploads");
+app.use("/uploads", express.static(uploadsPath));
 // routes
 app.use("/api/requests", requestRoute);
 app.use("/api/books", bookRoute);
