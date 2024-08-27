@@ -41,6 +41,9 @@ function generateUniqueId() {
 }
 
 const applyFilters = (query, filters) => {
+	if (filters.role) {
+		query = query.where("role").equals(filters.role);
+	}
 	if (filters.dateRange) {
 		query = query
 			.where("date")
@@ -53,7 +56,7 @@ const applyFilters = (query, filters) => {
 	if (filters.actions) {
 		query = query.where("actions").equals(filters.actions);
 	}
-	if (filters.activity) {
+	if (filters.bookName) {
 		query = query.where("bookName").equals(filters.bookName);
 	}
 	if (filters.numberOfBooksBorrowed) {
@@ -62,10 +65,10 @@ const applyFilters = (query, filters) => {
 			.equals(filters.numberOfBooksBorrowed);
 	}
 	if (filters.status) {
-		query = query.where("MemberId").equals(filters.userId);
+		query = query.where("status").equals(filters.status);
 	}
 	if (filters.memberName) {
-		query = query.where("memberName").equals(filters.memberName);
+		query = query.where("name").equals(filters.memberName);
 	}
 	return query;
 };
