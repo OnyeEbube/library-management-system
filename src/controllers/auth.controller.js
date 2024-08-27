@@ -4,11 +4,16 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
+const { BookService } = require("../services/books.service");
 const { User } = require("../models/user.model");
 const { error } = require("console");
 
 const baseUrl = process.env.FRONTEND_BASE_URL;
-const { sendEmail, generateUniqueId, applyFilters } = require("./functions");
+const {
+	sendEmail,
+	generateUniqueId,
+	calculateDateRange,
+} = require("./functions");
 //const mailgen = require("mailgen");
 
 const AuthController = {};
@@ -87,6 +92,66 @@ AuthController.loginUser = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 		console.error(error);
+	}
+};
+
+AuthController.summary = async (req, res) => {
+	try {
+		const totalUsers = await UserService.countUsers();
+		const availableBooks = await BookService.getAvailableBooks();
+		const totalBorrowedBooks = await BookService.countBorrowedBooks();
+		const damagedBooks = await BookService.countBooks({ status: "damaged" });
+
+		res.status(200).json({
+			totalUsers,
+			availableBooks,
+			totalBorrowedBooks,
+			damagedBooks,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+AuthController.newMembersStat = async (req, res) => {
+	const { period = "month" } = req.query;
+	const { startDate, endDate } = calculateDateRange(period);
+
+	try {
+		const newMembers = await UserService.getNewMembersStat(startDate, endDate);
+		res.status(200).json(newMembers);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+AuthController.booksReturnedStat = async (req, res) => {
+	const { period = "month" } = req.query;
+	const { startDate, endDate } = calculateDateRange(period);
+
+	try {
+		const pipeline = [
+			{
+				$match: {
+					returnedAt: {
+						$gte: startDate,
+						$lt: endDate,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: { $dateToString: { format: "%Y-%m-%d", date: "$returnedAt" } },
+					count: { $sum: 1 },
+				},
+			},
+		];
+		const booksReturned = await User.aggregate(pipeline);
+		res.status(200).json(booksReturned);
+	} catch (error) {
+		res
+			.status(500)
+			.json({ error: "Failed to fetch books returned statistics" });
 	}
 };
 

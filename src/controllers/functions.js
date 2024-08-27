@@ -76,4 +76,31 @@ const applyFilters = (query, filters) => {
 	return query;
 };
 
-module.exports = { sendEmail, generateUniqueId, applyFilters };
+const calculateDateRange = (period) => {
+	const now = new Date();
+	let startDate;
+
+	switch (period) {
+		case "year":
+			startDate = new Date(now.getFullYear(), 0, 1); // January 1st of the current year
+			break;
+		case "month":
+			startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st day of the current month
+			break;
+		case "week":
+			startDate = new Date(now.setDate(now.getDate() - now.getDay())); // Start of the current week (Sunday)
+			break;
+		default:
+			startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Default to the start of the current month
+			break;
+	}
+
+	return { startDate, endDate: now };
+};
+
+module.exports = {
+	sendEmail,
+	generateUniqueId,
+	applyFilters,
+	calculateDateRange,
+};

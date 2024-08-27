@@ -53,6 +53,22 @@ BookService.getAvailableBooks = async () => {
 	]);
 };
 
+BookService.countBorrowedBooks = async () => {
+	return await Book.aggregate([
+		{
+			$project: {
+				borrowed: { $size: "$borrowedBy" },
+			},
+		},
+		{
+			$group: {
+				_id: null,
+				totalBorrowed: { $sum: "$borrowed" },
+			},
+		},
+	]);
+};
+
 BookService.deleteBook = async (id) => {
 	return await Book.findOneAndDelete({ _id: id });
 };

@@ -17,6 +17,13 @@ router.get("/me", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
 router.get("/filter", adminAuth, AuthController.getFilteredMembers);
+router.get("/me/summary", adminAuth, AuthController.summary);
+router.get("/me/member-stat", adminAuth, AuthController.newMembersStat);
+router.get(
+	"/me/books-returned-stat",
+	adminAuth,
+	AuthController.booksReturnedStat
+);
 //router.get("/count", AuthController.countUsers);
 router.put("/favorites", userAuth, AuthController.addToFavorites);
 router.put("/remove-favorites", userAuth, AuthController.removeFromFavorites);

@@ -70,4 +70,23 @@ UserService.removeFromFavorites = async (userId, bookId) => {
 		{ new: true }
 	).exec();
 };
+
+UserService.getNewMembersStat = async (startDate, endDate) => {
+	return await User.aggregate([
+		{
+			$match: {
+				createdAt: {
+					$gte: startDate,
+					$lt: endDate,
+				},
+			},
+		},
+		{
+			$group: {
+				_id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+				count: { $sum: 1 },
+			},
+		},
+	]);
+};
 module.exports = { UserService };
