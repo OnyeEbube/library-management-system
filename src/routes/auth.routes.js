@@ -16,7 +16,7 @@ router.get("/", AuthController.getUsers);
 router.get("/me", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
-router.get("/:id", adminAuth, AuthController.getFilteredMembers);
+router.get("/", adminAuth, AuthController.getFilteredMembers);
 //router.get("/count", AuthController.countUsers);
 router.put(
 	"/:userId/:bookId/favorites",
