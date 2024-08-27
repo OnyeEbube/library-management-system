@@ -45,6 +45,33 @@ RequestController.getRequest = async (req, res) => {
 	}
 };
 
+RequestController.createSpecialRequest = async (req, res) => {
+	try {
+		const { bookName, author, category } = req.body;
+		const userId = req.user.id;
+		const userName = req.user.name;
+		const user = await UserService.getUserById(userId);
+		if (!user) {
+			return res.status(404).json({ error: "Please login to make a request" });
+		}
+		const book = await BookService.findOne({ bookName, author });
+		if (book) {
+			return res.status(400).json({ error: "Book already exists" });
+		}
+		const requestPayload = {
+			userId,
+			userName,
+			bookName,
+			author,
+			category,
+		};
+		const request = await RequestService.createRequest(requestPayload);
+		res.status(200).json(request);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
 RequestController.createRequest = async (req, res) => {
 	try {
 		const { bookId } = req.params;

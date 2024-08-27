@@ -22,7 +22,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
-app.use(express.static(path.join(__dirname, "uploads")));
+app.use(express.static("uploads", path.join(__dirname, "controllers/uploads")));
 
 // routes
 app.use("/api/requests", requestRoute);
