@@ -58,7 +58,7 @@ UserService.countFilteredUsers = async (filters) => {
 UserService.addToFavorites = async (userId, bookId) => {
 	return await User.findByIdAndUpdate(
 		userId,
-		{ $addToSet: { favorites: bookId } },
+		{ $addToSet: { favoriteBooks: bookId } },
 		{ new: true }
 	);
 };
@@ -66,8 +66,8 @@ UserService.addToFavorites = async (userId, bookId) => {
 UserService.removeFromFavorites = async (userId, bookId) => {
 	return await User.findByIdAndUpdate(
 		userId,
-		{ $pull: { favorites: bookId } },
+		{ $pull: { favoriteBooks: bookId } },
 		{ new: true }
-	);
+	).exec();
 };
 module.exports = { UserService };

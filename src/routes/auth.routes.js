@@ -18,16 +18,8 @@ router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
 router.get("/filter", adminAuth, AuthController.getFilteredMembers);
 //router.get("/count", AuthController.countUsers);
-router.put(
-	"/:userId/:bookId/favorites",
-	userAuth,
-	AuthController.addToFavorites
-);
-router.delete(
-	"/:userId/:bookId/favorites",
-	userAuth,
-	AuthController.removeFromFavorites
-);
+router.put("/favorites", userAuth, AuthController.addToFavorites);
+router.put("/remove-favorites", userAuth, AuthController.removeFromFavorites);
 // router.get("/logout", AuthController.logoutUser);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
 router.post("/uploads/:id", verifyUser, AuthController.uploadImage);
