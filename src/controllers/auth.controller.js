@@ -245,7 +245,11 @@ AuthController.resetPassword = async (req, res) => {
 	try {
 		const { email } = req.body;
 		const { password } = req.body;
+		const { confirmPassword } = req.body;
 		//const { id } = user;
+		if (password !== confirmPassword || !password || !confirmPassword) {
+			return res.status(400).json({ error: "Passwords do not match" });
+		}
 		const hashedPassword = await bcrypt.hash(password, 10);
 		UserService.updateUser(email, { password: hashedPassword });
 		res.status(200).json({ message: "Password reset successful" });
