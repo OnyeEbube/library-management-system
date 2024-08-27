@@ -14,8 +14,16 @@ BookController.getBooks = async (req, res) => {
 		if (!books) {
 			res.status(404).json({ error: "No books have been added" });
 		}
+		const booksWithImages = books.map((book) => {
+			return {
+				...book._doc, // Spread book document properties
+				imageUrl: `${req.protocol}://${req.get("host")}$/controllers${
+					book.image
+				}`, // Construct full image URL
+			};
+		});
 		res.status(200).json({
-			books,
+			books: booksWithImages,
 			pagination: {
 				totalBooks,
 				totalPages,
