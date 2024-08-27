@@ -67,8 +67,8 @@ const applyFilters = (query, filters) => {
 	if (filters.status) {
 		query = query.where("status").equals(filters.status);
 	}
-	if (filters.memberName) {
-		query = query.where("name").equals(filters.memberName);
+	if (filters.name) {
+		query = query.where("name").equals(filters.name);
 	}
 	return query;
 };

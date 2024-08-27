@@ -270,9 +270,10 @@ AuthController.getFilteredMembers = async (req, res) => {
 		const page = req.query.page || 1;
 		const skip = (page - 1) * limit;
 
-		let query = UserService.find();
+		l;
 		query = applyFilters(query, filters);
-		const totalUsers = await query.getFilteredMembers(filters); // count total books
+		console.log(filters);
+		const totalUsers = await UserService.getFilteredMembers(filters); // count total books
 		const totalPages = Math.ceil(totalUsers / limit);
 		const users = await UserService.getFilteredMembers(filters, limit, skip);
 

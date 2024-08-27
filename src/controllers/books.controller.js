@@ -17,7 +17,7 @@ BookController.getBooks = async (req, res) => {
 		const booksWithImages = books.map((book) => {
 			return {
 				...book._doc, // Spread book document properties
-				imageUrl: `${req.protocol}://${req.get("host")}$/controllers${
+				imageUrl: `${req.protocol}://${req.get("host")}/controllers${
 					book.image
 				}`, // Construct full image URL
 			};
