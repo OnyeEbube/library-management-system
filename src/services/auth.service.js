@@ -53,7 +53,7 @@ UserService.getFilteredMembers = async (filters, limit, skip) => {
 UserService.countFilteredUsers = async (filters) => {
 	let query = User.find(); // Assuming `User` is your Mongoose model
 	query = applyFilters(query, filters);
-	return await query.countDocuments();
+	return await query.countDocuments().exec();
 };
 UserService.addToFavorites = async (userId, bookId) => {
 	return await User.findByIdAndUpdate(

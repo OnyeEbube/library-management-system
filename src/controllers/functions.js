@@ -68,7 +68,10 @@ const applyFilters = (query, filters) => {
 		query = query.where("status").equals(filters.status);
 	}
 	if (filters.name) {
-		query = query.where("name").equals(filters.name);
+		query = query.where("name").equals(filters.name.trim());
+	}
+	if (filters.email) {
+		query = query.where("email").equals(filters.email.trim());
 	}
 	return query;
 };
