@@ -295,7 +295,7 @@ AuthController.getFilteredMembers = async (req, res) => {
 };
 AuthController.addToFavorites = async (req, res) => {
 	try {
-		const { id } = req.params;
+		const id = req.user._id;
 		const { bookId } = req.body;
 		const user = await UserService.getUserById(id);
 		if (!user) {
@@ -310,13 +310,13 @@ AuthController.addToFavorites = async (req, res) => {
 
 AuthController.removeFromFavorites = async (req, res) => {
 	try {
-		const { id } = req.params;
+		const userId = req.user._id;
 		const { bookId } = req.body;
-		const user = await UserService.getUserById(id);
+		const user = await UserService.getUserById(userId);
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });
 		}
-		const updatedUser = await UserService.removeFromFavorites(id, bookId);
+		const updatedUser = await UserService.removeFromFavorites(userId, bookId);
 		res.status(200).json(updatedUser);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
