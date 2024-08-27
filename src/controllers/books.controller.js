@@ -44,6 +44,9 @@ BookController.getBook = async (req, res) => {
 BookController.createBook = async (req, res) => {
 	try {
 		const { title } = req.body;
+		if (!image) {
+			image = "/uploads/default_1.jpg";
+		}
 		const existingBook = await BookService.findOne({ title: title });
 		if (existingBook) {
 			res.status(400).json({ error: "Book already exists" });
@@ -75,12 +78,12 @@ BookController.uploadBookCover = async (req, res) => {
 			if (err) {
 				return res.status(500).json({ error: err.message });
 			}
-		});
 
-		// Save the image path to the database
-		const image = `/uploads/${imageFile.name}`;
-		const uploadedBookCover = await BookService.uploadBookCover(id, image);
-		res.json(uploadedBookCover);
+			// Save the image path to the database
+			const image = `/uploads/${imageFile.name}`;
+			const uploadedBookCover = await BookService.uploadBookCover(id, image);
+			res.json(uploadedBookCover);
+		});
 	} catch (dbRrror) {
 		res.status(500).json({ error: dbRrror.message });
 	}

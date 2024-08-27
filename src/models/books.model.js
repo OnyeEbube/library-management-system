@@ -66,7 +66,6 @@ const BookSchema = mongoose.Schema(
 				ref: "User",
 			},
 		],
-		default: [],
 	},
 	{
 		timestamps: true,
