@@ -22,7 +22,7 @@ const RequestSchema = mongoose.Schema(
 
 		bookName: {
 			type: String,
-			required: true,
+			required: false,
 		},
 
 		bookId: {

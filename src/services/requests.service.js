@@ -19,7 +19,8 @@ RequestService.findById = async (id) => {
 };
 
 RequestService.createRequest = async (data) => {
-	return await Request.create(data);
+	const request = new Request(data);
+	return await request.save();
 };
 
 RequestService.updateRequest = async (id, data) => {
