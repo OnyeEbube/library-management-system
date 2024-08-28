@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
 const { BookService } = require("../services/books.service");
+const { RequestService } = require("../services/requests.service");
 const { User } = require("../models/user.model");
 const { error } = require("console");
 
@@ -100,11 +101,11 @@ AuthController.summary = async (req, res) => {
 		const totalUsers = await UserService.countUsers();
 		const availableBooks = await BookService.getAvailableBooks();
 		const totalBorrowedBooks = await BookService.countBorrowedBooks();
-		const damagedBooks = await BookService.countBooks({ status: "damaged" });
+		const damagedBooks = await BookService.countBooks({ status: "Damaged" });
 		if (
-			!totalUsers ||
-			!availableBooks ||
-			!totalBorrowedBooks ||
+			!totalUsers &&
+			!availableBooks &&
+			!totalBorrowedBooks &&
 			!damagedBooks
 		) {
 			return res.status(404).json({ error: "No data found" });
@@ -138,7 +139,7 @@ AuthController.booksReturnedStat = async (req, res) => {
 	const { startDate, endDate } = calculateDateRange(period);
 
 	try {
-		const booksReturned = await BookService.getBooksReturnedStats(
+		const booksReturned = await RequestService.getBooksReturnedStats(
 			startDate,
 			endDate
 		);

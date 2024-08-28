@@ -30,5 +30,23 @@ RequestService.updateRequest = async (id, data) => {
 RequestService.deleteRequest = async (id) => {
 	return await Request.findOneAndDelete({ _id: id });
 };
+RequestService.getBooksReturnedStats = async (startDate, endDate) => {
+	return await Request.aggregate([
+		{
+			$match: {
+				returnedAt: {
+					$gte: startDate,
+					$lt: endDate,
+				},
+			},
+		},
+		{
+			$group: {
+				_id: { $dateToString: { format: "%Y-%m-%d", date: "$returnedAt" } },
+				count: { $sum: 1 },
+			},
+		},
+	]);
+};
 
 module.exports = { RequestService };

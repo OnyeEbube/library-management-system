@@ -178,9 +178,9 @@ RequestController.handleRequestAction = async (req, res) => {
 
 RequestController.handleReturnAction = async (req, res) => {
 	try {
-		const id = req.params; // Get request ID from URL parameters
+		const { id } = req.params; // Get request ID from URL parameters
 
-		const bookRequest = await RequestService.findById({ _id: id });
+		const bookRequest = await RequestService.findById(id);
 		if (!bookRequest)
 			return res.status(404).json({ error: "Request not found" }); // Check if the request exists
 
@@ -195,7 +195,9 @@ RequestController.handleReturnAction = async (req, res) => {
 
 		// Logic to handle book return
 		bookRequest.status = "Returned";
+		bookRequest.returnedAt = new Date();
 		user.numberOfBooksBorrowed -= 1;
+		user.booksBorrowed.pull(book._id);
 		book.quantity += 1;
 		book.borrowedBy = book.borrowedBy.filter(
 			(borrowerId) => !borrowerId.equals(user._id)

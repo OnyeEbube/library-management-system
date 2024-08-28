@@ -8,8 +8,8 @@ BookService.findOne = async (filter) => {
 	return await Book.findOne(filter);
 };
 
-BookService.countBooks = async () => {
-	return await Book.countDocuments();
+BookService.countBooks = async (filter = {}) => {
+	return await Book.countDocuments(filter);
 };
 BookService.findAll = async (limit, skip) => {
 	return await Book.find().limit(limit).skip(skip);

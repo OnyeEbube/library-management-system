@@ -37,6 +37,7 @@ const RequestSchema = mongoose.Schema(
 			enum: ["Pending", "Approved", "Declined", "Returned", "Cancelled"],
 			default: "Pending",
 		},
+		returnedAt: { type: Date },
 
 		timeRequested: { type: Date, default: Date.now },
 

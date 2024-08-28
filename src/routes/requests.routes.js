@@ -11,6 +11,7 @@ router.get("/:id", adminAuth, RequestController.getRequest);
 router.post("/:bookId", userAuth, RequestController.createRequest);
 //approve a request
 router.post("/:id/approve", adminAuth, RequestController.handleRequestAction);
+router.post("/:id/return", adminAuth, RequestController.handleReturnAction);
 //update a request
 router.put("/:id", adminAuth, RequestController.updateRequest);
 //delete a request
