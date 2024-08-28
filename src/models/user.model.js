@@ -7,6 +7,14 @@ const userSchema = new mongoose.Schema({
 	lastName: String,
 	dateOfBirth: Date,
 	houseAddress: String,
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
+	updatedAt: {
+		type: Date,
+		default: Date.now,
+	},
 	favoriteBooks: [
 		{
 			type: mongoose.Schema.Types.ObjectId,

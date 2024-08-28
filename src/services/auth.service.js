@@ -87,6 +87,7 @@ UserService.getNewMembersStat = async (startDate, endDate) => {
 				count: { $sum: 1 },
 			},
 		},
+		{ $sort: { _id: 1 } },
 	]);
 };
 module.exports = { UserService };

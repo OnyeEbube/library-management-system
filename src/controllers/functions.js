@@ -79,6 +79,7 @@ const applyFilters = (query, filters) => {
 const calculateDateRange = (period) => {
 	const now = new Date();
 	let startDate;
+	let endDate = new Date(); // Current date and time
 
 	switch (period) {
 		case "year":
@@ -88,14 +89,18 @@ const calculateDateRange = (period) => {
 			startDate = new Date(now.getFullYear(), now.getMonth(), 1); // 1st day of the current month
 			break;
 		case "week":
-			startDate = new Date(now.setDate(now.getDate() - now.getDay())); // Start of the current week (Sunday)
+			startDate = new Date(now);
+			startDate.setDate(now.getDate() - now.getDay()); // Start of the week (Sunday)
+			startDate.setHours(0, 0, 0, 0); // Set time to start of the day
 			break;
 		default:
 			startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Default to the start of the current month
 			break;
 	}
+	console.log("Start Date:", startDate.toISOString()); // Verify the correct date format
+	console.log("End Date:", now.toISOString());
 
-	return { startDate, endDate: now };
+	return { startDate, endDate };
 };
 
 module.exports = {
