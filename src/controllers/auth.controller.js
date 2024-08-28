@@ -101,6 +101,14 @@ AuthController.summary = async (req, res) => {
 		const availableBooks = await BookService.getAvailableBooks();
 		const totalBorrowedBooks = await BookService.countBorrowedBooks();
 		const damagedBooks = await BookService.countBooks({ status: "damaged" });
+		if (
+			!totalUsers ||
+			!availableBooks ||
+			!totalBorrowedBooks ||
+			!damagedBooks
+		) {
+			return res.status(404).json({ error: "No data found" });
+		}
 
 		res.status(200).json({
 			totalUsers,

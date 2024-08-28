@@ -40,7 +40,7 @@ BookService.getAvailableBooks = async () => {
 		{
 			$project: {
 				availableQuantity: {
-					$subtract: ["$quantity", { $size: "$borrowedBy" }],
+					$subtract: ["$quantity", { $size: { $ifNull: ["$borrowedBy", []] } }],
 				},
 			},
 		},
@@ -50,6 +50,15 @@ BookService.getAvailableBooks = async () => {
 				totalAvailable: { $sum: "$availableQuantity" },
 			},
 		},
+		{
+			$project: {
+				totalAvailable: 1,
+				debugInfo: {
+					totalBooks: { $sum: "$quantity" },
+					totalBorrowedBy: { $sum: "$borrowedBySize" },
+				},
+			},
+		},
 	]);
 };
 
@@ -57,13 +66,21 @@ BookService.countBorrowedBooks = async () => {
 	return await Book.aggregate([
 		{
 			$project: {
-				borrowed: { $size: "$borrowedBy" },
+				borrowed: { $size: { $ifNull: ["$borrowedBy", []] } },
 			},
 		},
 		{
 			$group: {
 				_id: null,
 				totalBorrowed: { $sum: "$borrowed" },
+			},
+		},
+		{
+			$project: {
+				totalBorrowed: 1,
+				debugInfo: {
+					totalBooks: { $sum: "$borrowed" },
+				},
 			},
 		},
 	]);

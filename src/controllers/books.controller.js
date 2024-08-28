@@ -41,7 +41,7 @@ BookController.getBook = async (req, res) => {
 		const { id } = req.params;
 		const book = await BookService.findById(id);
 		if (!book) {
-			res.status(400).json({ error: "Book does not exist" });
+			return res.status(400).json({ error: "Book does not exist" });
 		}
 		res.status(200).json(book);
 	} catch (error) {
@@ -52,12 +52,10 @@ BookController.getBook = async (req, res) => {
 BookController.createBook = async (req, res) => {
 	try {
 		const { title } = req.body;
-		if (!image) {
-			image = "/uploads/default_1.jpg";
-		}
+
 		const existingBook = await BookService.findOne({ title: title });
 		if (existingBook) {
-			res.status(400).json({ error: "Book already exists" });
+			return res.status(400).json({ error: "Book already exists" });
 		}
 		const book = await BookService.createBook(req.body);
 		res.status(200).json(book);
