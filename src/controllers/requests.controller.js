@@ -2,6 +2,7 @@ const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
 const { UserService } = require("../services/auth.service");
 const RequestController = {};
+const mongoose = require("mongoose");
 
 RequestController.getRequests = async (req, res) => {
 	try {
@@ -131,20 +132,28 @@ RequestController.handleRequestAction = async (req, res) => {
 		const { status } = req.body;
 
 		const bookRequest = await RequestService.findById(id);
-		if (!bookRequest)
+		console.log(bookRequest);
+		if (!bookRequest) {
 			return res.status(404).json({ error: "Request not found" });
+		}
 
-		bookRequest.status = status;
+		const userId = bookRequest.userId; // Convert to ObjectId
+		const bookId = bookRequest.bookId;
+		console.log(userId);
+		console.log(bookId);
+		const book = await BookService.findById(bookId);
+		console.log(book);
+		const user = await UserService.getUserById(userId);
+		console.log(user);
 
-		await bookRequest.save();
-
-		const user = await UserService.getUserById(bookRequest.userId);
-		const book = await BookService.findById(bookRequest.bookId);
 		if (!user) return res.status(404).json({ error: "User not found" });
 		if (!book) return res.status(404).json({ error: "Book not found" });
 
+		bookRequest.status = status;
+
 		if (status === "Approved") {
 			user.numberOfBooksBorrowed += 1;
+			user.booksBorrowed.push(bookId);
 			book.borrowedBy.push(user._id);
 			book.quantity -= 1;
 			if (book.quantity === 0) {
@@ -154,7 +163,9 @@ RequestController.handleRequestAction = async (req, res) => {
 			user.numberOfBooksBorrowed = user.numberOfBooksBorrowed;
 		}
 
+		await bookRequest.save();
 		await user.save();
+		await book.save();
 
 		res.status(200).json({
 			message: `Request ${status.toLowerCase()} successfully`,
@@ -167,9 +178,9 @@ RequestController.handleRequestAction = async (req, res) => {
 
 RequestController.handleReturnAction = async (req, res) => {
 	try {
-		const { id } = req.params; // Get request ID from URL parameters
+		const id = req.params; // Get request ID from URL parameters
 
-		const bookRequest = await RequestService.findById(id);
+		const bookRequest = await RequestService.findById({ _id: id });
 		if (!bookRequest)
 			return res.status(404).json({ error: "Request not found" }); // Check if the request exists
 

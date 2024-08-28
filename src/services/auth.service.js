@@ -8,7 +8,7 @@ UserService.getUser = async (filter, projection) => {
 };
 
 UserService.getUserById = async (id) => {
-	return await User.findById({ _id: id }).select("-password");
+	return await User.findById({ _id: id }).select("-password").exec();
 };
 
 UserService.countUsers = async () => {

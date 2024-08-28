@@ -15,7 +15,7 @@ RequestService.countRequests = async () => {
 };
 
 RequestService.findById = async (id) => {
-	return await Request.findById(id);
+	return await Request.findById(id).exec();
 };
 
 RequestService.createRequest = async (data) => {

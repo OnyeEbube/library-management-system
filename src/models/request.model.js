@@ -11,7 +11,8 @@ const mongoose = require("mongoose");
 const RequestSchema = mongoose.Schema(
 	{
 		userId: {
-			type: String,
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
 			required: true,
 		},
 
@@ -26,7 +27,8 @@ const RequestSchema = mongoose.Schema(
 		},
 
 		bookId: {
-			type: String,
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Book",
 			required: true,
 		},
 
