@@ -62,6 +62,25 @@ BookService.getAvailableBooks = async () => {
 	]);
 };
 
+BookService.getBooksReturnedStats = async (startDate, endDate) => {
+	return await Book.aggregate([
+		{
+			$match: {
+				returnedAt: {
+					$gte: startDate,
+					$lt: endDate,
+				},
+			},
+		},
+		{
+			$group: {
+				_id: { $dateToString: { format: "%Y-%m-%d", date: "$returnedAt" } },
+				count: { $sum: 1 },
+			},
+		},
+	]);
+};
+
 BookService.countBorrowedBooks = async () => {
 	return await Book.aggregate([
 		{

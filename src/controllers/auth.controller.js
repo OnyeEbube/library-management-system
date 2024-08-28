@@ -138,28 +138,13 @@ AuthController.booksReturnedStat = async (req, res) => {
 	const { startDate, endDate } = calculateDateRange(period);
 
 	try {
-		const pipeline = [
-			{
-				$match: {
-					returnedAt: {
-						$gte: startDate,
-						$lt: endDate,
-					},
-				},
-			},
-			{
-				$group: {
-					_id: { $dateToString: { format: "%Y-%m-%d", date: "$returnedAt" } },
-					count: { $sum: 1 },
-				},
-			},
-		];
-		const booksReturned = await User.aggregate(pipeline);
+		const booksReturned = await BookService.getBooksReturnedStats(
+			startDate,
+			endDate
+		);
 		res.status(200).json(booksReturned);
 	} catch (error) {
-		res
-			.status(500)
-			.json({ error: "Failed to fetch books returned statistics" });
+		res.status(500).json({ error: error.message });
 	}
 };
 
