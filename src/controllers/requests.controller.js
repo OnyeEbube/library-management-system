@@ -38,7 +38,7 @@ RequestController.getRequest = async (req, res) => {
 		const { id } = req.params;
 		const request = await RequestService.findById(id);
 		if (!request) {
-			res.status(400).json({ error: "Request does not exist" });
+			return res.status(400).json({ error: "Request does not exist" });
 		}
 		res.status(200).json(request);
 	} catch (error) {
