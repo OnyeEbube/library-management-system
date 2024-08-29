@@ -29,7 +29,7 @@ const RequestSchema = mongoose.Schema(
 		bookId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Book",
-			required: true,
+			required: false,
 		},
 
 		status: {
