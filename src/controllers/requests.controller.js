@@ -2,7 +2,6 @@ const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
 const { UserService } = require("../services/auth.service");
 const { NotificationService } = require("../services/notification.service");
-const { NotificationController } = require("./notifications.controller");
 const RequestController = {};
 
 RequestController.getRequests = async (req, res) => {
@@ -28,11 +27,6 @@ RequestController.getRequests = async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 };
-
-/*RequestController.createSpecialRequest = async (req, res) => {
-	try {
-		const { userId, userName } = req.body;
-*/
 
 RequestController.getRequest = async (req, res) => {
 	try {
@@ -68,6 +62,30 @@ RequestController.createSpecialRequest = async (req, res) => {
 			category,
 		};
 		const request = await RequestService.createRequest(requestPayload);
+
+		const userNotification = await NotificationService.createNotification({
+			userId: userId,
+			requestId: request._id,
+			message: `Special Request for ${bookName} created successfully.`,
+		});
+		if (!userNotification) {
+			return res.status(404).json({ error: "Notification creation failed" });
+		}
+
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(404).json({ error: "No admins found" });
+		}
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: bookRequest._id,
+				message: `${userName} specially requested for ${bookName}`,
+			});
+			if (!adminNotifications) {
+				return res.status(404).json({ error: "Notification creation failed" });
+			}
+		}
 		res.status(200).json(request);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
@@ -118,6 +136,25 @@ RequestController.createRequest = async (req, res) => {
 			return res.status(400).json({ error: "Notification not created" });
 		}
 		console.log(newNotification);
+
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(400).json({ error: "No admin found" });
+		}
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: bookRequest._id,
+				message: `You have successfully ${status} the request for ${book.title}`,
+				status: bookRequest.status,
+			});
+			if (!adminNotifications) {
+				return res
+					.status(400)
+					.json({ error: "Admin notification not created" });
+			}
+		}
+
 		// Respond with the created request
 		res.status(200).json(requests);
 	} catch (error) {
@@ -132,7 +169,31 @@ RequestController.updateRequest = async (req, res) => {
 		if (!requests) {
 			return res.status(404).json({ message: "Request not found" });
 		}
+		const userId = requests.userId;
 		const updatedRequest = await RequestService.updateRequest(id, req.body); // TODO: Update this endpoint to correct return date
+		const userNotification = await NotificationService.createNotification({
+			userId: userId,
+			requestId: requests._id,
+			message: `Request updated successfully.`,
+		});
+		if (!userNotification) {
+			return res.status(404).json({ error: "Notification creation failed" });
+		}
+
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(404).json({ error: "No admins found" });
+		}
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: requests._id,
+				message: `Request updated successfully`,
+			});
+			if (!adminNotifications) {
+				return res.status(404).json({ error: "Notification creation failed" });
+			}
+		}
 		res.status(200).json(updatedRequest);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
@@ -174,13 +235,18 @@ RequestController.handleRequestAction = async (req, res) => {
 
 		const userNotification = await NotificationService.createNotification({
 			userId: user._id,
-			request: bookRequest._id,
+			requestId: bookRequest._id,
 			message: `Request${status} You can now come to the library to pick up your book.`,
 			status: bookRequest.status,
 		});
-		await userNotification.save();
+		if (!userNotification) {
+			return res.status(404).json({ error: "Notification creation failed" });
+		}
 
-		const admins = await UserService.findAdmins();
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(404).json({ error: "No admins found" });
+		}
 		for (const admin of admins) {
 			const adminNotifications = NotificationService.createNotification({
 				userId: admin._id,
@@ -188,7 +254,9 @@ RequestController.handleRequestAction = async (req, res) => {
 				message: `You have successfully ${status} the request for ${book.title}`,
 				status: bookRequest.status,
 			});
-			await adminNotifications.save();
+			if (!adminNotifications) {
+				return res.status(404).json({ error: "Notification creation failed" });
+			}
 		}
 
 		res.status(200).json({
@@ -237,11 +305,29 @@ RequestController.handleReturnAction = async (req, res) => {
 
 		const userNotification = await NotificationService.createNotification({
 			userId: user._id,
-			request: bookRequest._id,
-			message: `Book Returned Successfully.`,
+			requestId: bookRequest._id,
+			message: `Request${bookRequest.status}.`,
 			status: bookRequest.status,
 		});
-		await userNotification.save();
+		if (!userNotification) {
+			return res.status(404).json({ error: "Notification creation failed" });
+		}
+
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(404).json({ error: "No admins found" });
+		}
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: bookRequest._id,
+				message: `You have successfully ${bookRequest.status} the request for ${book.title}`,
+				status: bookRequest.status,
+			});
+			if (!adminNotifications) {
+				return res.status(404).json({ error: "Notification creation failed" });
+			}
+		}
 		res.status(200).json({
 			message: "Book returned successfully",
 			bookRequest,
@@ -264,6 +350,32 @@ RequestController.cancelRequest = async (req, res) => {
 		if (!book) return res.status(404).json({ error: "Book not found" });
 		bookRequest.status = "Cancelled";
 		await bookRequest.save();
+
+		const userNotification = await NotificationService.createNotification({
+			userId: user._id,
+			requestId: bookRequest._id,
+			message: `Request${bookRequeststatus}`,
+			status: bookRequest.status,
+		});
+		if (!userNotification) {
+			return res.status(404).json({ error: "Notification creation failed" });
+		}
+
+		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		if (!admins) {
+			return res.status(404).json({ error: "No admins found" });
+		}
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: bookRequest._id,
+				message: `You have successfully ${bookRequest.status} the request for ${book.title}`,
+				status: bookRequest.status,
+			});
+			if (!adminNotifications) {
+				return res.status(404).json({ error: "Notification creation failed" });
+			}
+		}
 		res.status(200).json({
 			message: "Request cancelled successfully",
 			bookRequest,

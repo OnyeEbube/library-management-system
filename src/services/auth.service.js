@@ -54,8 +54,8 @@ UserService.getFilteredMembers = async (filters, limit, skip) => {
 	return await query.skip(skip).limit(limit).exec();
 };
 
-UserService.countFilteredUsers = async (filters) => {
-	let query = User.find(); // Assuming `User` is your Mongoose model
+UserService.countFilteredUsers = async (filters, role = "USER") => {
+	let query = User.find({ role }); // Assuming `User` is your Mongoose model
 	query = applyFilters(query, filters);
 	return await query.countDocuments().exec();
 };

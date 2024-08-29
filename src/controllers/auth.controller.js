@@ -379,7 +379,7 @@ AuthController.getFilteredMembers = async (req, res) => {
 
 		// Apply filters using the query object directly from the User model
 		// Count total filtered users
-		const totalUsers = await UserService.countFilteredUsers(filters); // Use `.clone()` to reuse the query
+		const totalUsers = await UserService.countFilteredUsers(filters, "USER"); // Use `.clone()` to reuse the query
 		const totalPages = Math.ceil(totalUsers / limit);
 
 		// Fetch the filtered users with pagination
@@ -428,20 +428,17 @@ AuthController.removeFromFavorites = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
-/*
-AuthController.logout = async (req, res) => {
-	try {
-		const { id } = req.user;
-		const user = await UserService.getUserById(id);
-		if (!user) {
-			return res.status(404).json({ error: "User not found" });
-		}
 
-		res.status(200).json({ message: "User logged out successfully" });
+AuthController.getMembersOnly = async (req, res) => {
+	try {
+		const members = await UserService.getUsers({ role: "USER" });
+		if (!members) {
+			return res.status(404).json({ error: "No members found" });
+		}
+		res.status(200).json(members);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
-*/
 
 module.exports = { AuthController };
