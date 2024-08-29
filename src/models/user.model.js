@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
 	resetToken: String,
 	passwordResetTokenExpiryTime: {
 		type: Date,
-		default: () => Date.now() + 900000,
+		default: () => Date.now() + 15 * 60 * 1000, // Set expiry time to 15 minutes from now
 	},
 	role: { type: String, enum: ["ADMIN", "USER"] },
 

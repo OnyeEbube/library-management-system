@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
+const User = require("../models/user.model");
 const user = process.env.USER;
 const pass = process.env.PASS;
 
@@ -103,9 +104,34 @@ const calculateDateRange = (period) => {
 	return { startDate, endDate };
 };
 
+const generateOTP = () => {
+	const otp = Math.floor(1000 + Math.random() * 9000); // Generates a 6-digit OTP
+	return otp.toString();
+};
+
+const createOTPWithExpiry = () => {
+	const otp = generateOTP();
+	const expiryTime = new Date(Date.now() + 15 * 60 * 1000); // Set expiry time to 5 minutes from now
+	return { otp, expiryTime };
+};
+
+const clearToken = async (userId) => {
+	await User.findByIdAndUpdate(
+		{ _id: userId },
+		{
+			resetToken: null,
+			passwordResetTokenExpiryTime: null,
+		}
+	);
+
+	console.log("OTP cleared from user.");
+};
 module.exports = {
 	sendEmail,
 	generateUniqueId,
 	applyFilters,
 	calculateDateRange,
+	generateOTP,
+	createOTPWithExpiry,
+	clearToken,
 };

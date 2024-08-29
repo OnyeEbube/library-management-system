@@ -10,6 +10,8 @@ const router = express.Router();
 router.post("/register", AuthController.createUser);
 router.post("/login", AuthController.loginUser);
 router.post("/forgot-password", AuthController.forgotPassword);
+router.post("/forgot-password-mobile", AuthController.forgotPasswordMobile);
+router.get("/verify-otp-mobile", AuthController.verifyOTPMobile);
 router.put("/reset-password", AuthController.resetPassword);
 router.get("/verify-token/:resetToken", AuthController.verifyToken);
 router.get("/", AuthController.getUsers);

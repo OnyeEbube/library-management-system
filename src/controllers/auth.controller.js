@@ -6,16 +6,17 @@ const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
 const { BookService } = require("../services/books.service");
 const { RequestService } = require("../services/requests.service");
-const { User } = require("../models/user.model");
-const { error } = require("console");
 
 const baseUrl = process.env.FRONTEND_BASE_URL;
 const {
 	sendEmail,
 	generateUniqueId,
 	calculateDateRange,
+	generateOTP,
+	createOTPWithExpiry,
+	clearToken,
 } = require("./functions");
-//const mailgen = require("mailgen");
+const e = require("express");
 
 const AuthController = {};
 
@@ -290,6 +291,52 @@ AuthController.forgotPassword = async (req, res, next) => {
 		.json({ message: "You should receive an email with your token" });
 };
 
+AuthController.forgotPasswordMobile = async (req, res, next) => {
+	try {
+		const { email } = req.body;
+		const user = await UserService.getUser({ email });
+		if (!user) {
+			return res.status(400).json({ error: "This user does not exist!" });
+		}
+		const { id } = user;
+		const { otp, expiryTime } = createOTPWithExpiry();
+		UserService.updateUser(id, {
+			$set: { resetToken: otp, passwordResetTokenExpiryTime: expiryTime },
+		});
+		console.log("OTP saved to user:", otp);
+		sendEmail(email, `${otp}  Here is your OTP`);
+
+		res
+			.status(200)
+			.json({ message: "You should receive an email with your OTP" });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+AuthController.verifyOTPMobile = async (req, res) => {
+	try {
+		const { email, otp } = req.body;
+		const user = await UserService.getUser({ email });
+		if (!user) {
+			return res.status(400).json({ message: "Invalid OTP" });
+		}
+		const { resetToken, passwordResetTokenExpiryTime } = user;
+		const now = new Date();
+		if (now > passwordResetTokenExpiryTime) {
+			return res.status(400).json({ message: "OTP has expired" });
+		}
+		if (resetToken !== otp) {
+			return res.status(400).json({ message: "Invalid OTP" });
+		}
+		res.status(200).json({ message: "OTP verified successfully" });
+		clearToken(user._id);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+		clearToken(user._id);
+	}
+};
+
 AuthController.verifyToken = async (req, res) => {
 	const { resetToken } = req.params;
 
@@ -298,7 +345,7 @@ AuthController.verifyToken = async (req, res) => {
 		return res.status(400).json({ message: "Invalid Token" });
 	}
 	res.status(200).json({ message: "Token verified successfully", user });
-	await UserService.updateUser({ user, resetToken: "" });
+	clearToken(user._id);
 };
 
 AuthController.resetPassword = async (req, res) => {
