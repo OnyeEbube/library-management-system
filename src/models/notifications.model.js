@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const NotificationSchema = mongoose.Schema(
 	{
-		adminId: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
-			required: true,
-		},
 		userId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
@@ -33,21 +28,17 @@ const NotificationSchema = mongoose.Schema(
 			ref: "Request",
 			required: true,
 		},
+		status: {
+			type: String,
+			enum: ["Approved", "Declined", "Pending"],
+			default: "Pending",
+			required: false,
+		},
 
 		createdAt: { type: Date, default: Date.now },
 	},
 	{ timestamp: true }
 );
-NotificationSchema.pre("save", async function (next) {
-	const user = await mongoose.model("User").findById(this.adminId);
-
-	if (user && user.role === "ADMIN") {
-		next();
-	} else {
-		const err = new Error("adminId must reference a user with the ADMIN role");
-		next(err);
-	}
-});
 
 const Notification = mongoose.model("Notification", NotificationSchema);
 module.exports = Notification;

@@ -7,18 +7,22 @@ NotificationService.createNotification = async (notification) => {
 	return await newNotification.save();
 };
 
-NotificationService.getNotificationById = async (id) => {
-	return await Notification.findById(id);
+/*NotificationService.getNotificationById = async (_id) => {
+	return await Notification.findById(_id);
+};
+*/
+NotificationService.getNotificationById = async (userId) => {
+	return await Notification.find(userId) // Assuming notifications have a `userId` field
+		.sort({ createdAt: -1 })
+		.limit(20);
 };
 
-NotificationService.getNotifications = async (userId) => {
-	return await Notification.find({ userId });
+NotificationService.getNotification = async (filter) => {
+	return await Notification.findOne(filter);
 };
 
-NotificationService.markAsRead = async (id) => {
-	const notification = await Notification.findById(id);
-	notification.read = true;
-	return await notification.save();
+NotificationService.getNotifications = async () => {
+	return await Notification.findAll();
 };
 
 module.exports = { NotificationService };

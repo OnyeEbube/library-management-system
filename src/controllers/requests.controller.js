@@ -1,13 +1,9 @@
 const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
 const { UserService } = require("../services/auth.service");
-const {
-	NotificationController,
-} = require("../controllers/notifications.controller");
+const { NotificationService } = require("../services/notification.service");
+const { NotificationController } = require("./notifications.controller");
 const RequestController = {};
-const mongoose = require("mongoose");
-const { sendEmail } = require("./functions");
-const { create } = require("../models/user.model");
 
 RequestController.getRequests = async (req, res) => {
 	try {
@@ -109,17 +105,21 @@ RequestController.createRequest = async (req, res) => {
 			bookId,
 		};
 		const requests = await RequestService.createRequest(requestPayload);
-
+		if (!requests) {
+			return res.status(400).json({ error: "Request not created" });
+		}
+		const newNotification = await NotificationService.createNotification({
+			userId,
+			message: `${userName} sent a request for ${existingBook.title}`,
+			requestId: requests._id,
+			status: requests.status,
+		});
+		if (!newNotification) {
+			return res.status(400).json({ error: "Notification not created" });
+		}
+		console.log(newNotification);
 		// Respond with the created request
 		res.status(200).json(requests);
-		const newNotification = await NotificationController.createNotification({
-			userId,
-			message: "Request created",
-			description: "Your request has been created successfully",
-			requestId: requests._id,
-		});
-		NotificationController.createNotification(newNotification);
-		NotificationController.createAdminNotification();
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -143,27 +143,18 @@ RequestController.handleRequestAction = async (req, res) => {
 	try {
 		const { id } = req.params;
 		const { status } = req.body;
-
 		const bookRequest = await RequestService.findById(id);
 		console.log(bookRequest);
 		if (!bookRequest) {
 			return res.status(404).json({ error: "Request not found" });
 		}
-
 		const userId = bookRequest.userId; // Convert to ObjectId
 		const bookId = bookRequest.bookId;
-		console.log(userId);
-		console.log(bookId);
 		const book = await BookService.findById(bookId);
-		console.log(book);
 		const user = await UserService.getUserById(userId);
-		console.log(user);
-
 		if (!user) return res.status(404).json({ error: "User not found" });
 		if (!book) return res.status(404).json({ error: "Book not found" });
-
 		bookRequest.status = status;
-
 		if (status === "Approved") {
 			user.numberOfBooksBorrowed += 1;
 			user.booksBorrowed.push(bookId);
@@ -181,12 +172,31 @@ RequestController.handleRequestAction = async (req, res) => {
 		await user.save();
 		await book.save();
 
+		const userNotification = await NotificationService.createNotification({
+			userId: user._id,
+			request: bookRequest._id,
+			message: `Request${status} You can now come to the library to pick up your book.`,
+			status: bookRequest.status,
+		});
+		await userNotification.save();
+
+		const admins = await UserService.findAdmins();
+		for (const admin of admins) {
+			const adminNotifications = NotificationService.createNotification({
+				userId: admin._id,
+				requestId: bookRequest._id,
+				message: `You have successfully ${status} the request for ${book.title}`,
+				status: bookRequest.status,
+			});
+			await adminNotifications.save();
+		}
+
 		res.status(200).json({
-			message: `Request ${status.toLowerCase()} successfully`,
-			bookRequest,
+			success: true,
+			data: bookRequest,
 		});
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ success: false, error: error.message });
 	}
 };
 
@@ -225,6 +235,13 @@ RequestController.handleReturnAction = async (req, res) => {
 		await book.save();
 		await user.save();
 
+		const userNotification = await NotificationService.createNotification({
+			userId: user._id,
+			request: bookRequest._id,
+			message: `Book Returned Successfully.`,
+			status: bookRequest.status,
+		});
+		await userNotification.save();
 		res.status(200).json({
 			message: "Book returned successfully",
 			bookRequest,
