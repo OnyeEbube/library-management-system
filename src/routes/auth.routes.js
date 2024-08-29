@@ -13,13 +13,14 @@ router.post("/forgot-password", AuthController.forgotPassword);
 router.post("/forgot-password-mobile", AuthController.forgotPasswordMobile);
 router.get("/verify-otp-mobile", AuthController.verifyOTPMobile);
 router.put("/reset-password", AuthController.resetPassword);
+router.get("/filter", adminAuth, AuthController.getFilteredMembers);
+router.get("/members-only", adminAuth, AuthController.getMembersOnly);
 router.get("/verify-token/:resetToken", AuthController.verifyToken);
 router.get("/", AuthController.getUsers);
 router.get("/me", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
-router.get("/filter", adminAuth, AuthController.getFilteredMembers);
-router.get("/members-only", adminAuth, AuthController.getMembersOnly);
+
 router.get("/me/summary", adminAuth, AuthController.summary);
 router.get("/me/member-stat", adminAuth, AuthController.newMembersStat);
 router.get(

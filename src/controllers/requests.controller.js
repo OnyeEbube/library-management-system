@@ -72,14 +72,14 @@ RequestController.createSpecialRequest = async (req, res) => {
 			return res.status(404).json({ error: "Notification creation failed" });
 		}
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(404).json({ error: "No admins found" });
 		}
 		for (const admin of admins) {
 			const adminNotifications = NotificationService.createNotification({
 				userId: admin._id,
-				requestId: bookRequest._id,
+				requestId: request._id,
 				message: `${userName} specially requested for ${bookName}`,
 			});
 			if (!adminNotifications) {
@@ -344,7 +344,7 @@ RequestController.cancelRequest = async (req, res) => {
 		if (!bookRequest)
 			return res.status(404).json({ error: "Request not found" });
 
-		const user = await UserService.getUserById(bookRequest);
+		const user = await UserService.getUserById(bookRequest.userId);
 		const book = await BookService.findById(bookRequest.bookId);
 		if (!user) return res.status(404).json({ error: "User not found" });
 		if (!book) return res.status(404).json({ error: "Book not found" });
@@ -354,14 +354,14 @@ RequestController.cancelRequest = async (req, res) => {
 		const userNotification = await NotificationService.createNotification({
 			userId: user._id,
 			requestId: bookRequest._id,
-			message: `Request${bookRequeststatus}`,
-			status: bookRequest.status,
+			message: `Request${bookRequest.status}`,
+			//status: bookRequest.status,
 		});
 		if (!userNotification) {
 			return res.status(404).json({ error: "Notification creation failed" });
 		}
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(404).json({ error: "No admins found" });
 		}
@@ -370,7 +370,7 @@ RequestController.cancelRequest = async (req, res) => {
 				userId: admin._id,
 				requestId: bookRequest._id,
 				message: `You have successfully ${bookRequest.status} the request for ${book.title}`,
-				status: bookRequest.status,
+				//status: bookRequest.status,
 			});
 			if (!adminNotifications) {
 				return res.status(404).json({ error: "Notification creation failed" });

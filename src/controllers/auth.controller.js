@@ -431,7 +431,7 @@ AuthController.removeFromFavorites = async (req, res) => {
 
 AuthController.getMembersOnly = async (req, res) => {
 	try {
-		const members = await UserService.getUsers({ role: "USER" });
+		const members = await UserService.getUsersByRole("USER");
 		if (!members) {
 			return res.status(404).json({ error: "No members found" });
 		}
