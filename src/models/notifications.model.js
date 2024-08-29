@@ -38,7 +38,7 @@ const NotificationSchema = mongoose.Schema(
 	},
 	{ timestamp: true }
 );
-Notification.pre("save", async function (next) {
+NotificationSchema.pre("save", async function (next) {
 	const user = await mongoose.model("User").findById(this.adminId);
 
 	if (user && user.role === "ADMIN") {
