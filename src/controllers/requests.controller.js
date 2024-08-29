@@ -144,9 +144,9 @@ RequestController.createRequest = async (req, res) => {
 		for (const admin of admins) {
 			const adminNotifications = NotificationService.createNotification({
 				userId: admin._id,
-				requestId: bookRequest._id,
+				requestId: requests._id,
 				message: `You have successfully ${status} the request for ${book.title}`,
-				status: bookRequest.status,
+				status: requests.status,
 			});
 			if (!adminNotifications) {
 				return res
@@ -307,7 +307,7 @@ RequestController.handleReturnAction = async (req, res) => {
 			userId: user._id,
 			requestId: bookRequest._id,
 			message: `Request${bookRequest.status}.`,
-			status: bookRequest.status,
+			//status: bookRequest.status,
 		});
 		if (!userNotification) {
 			return res.status(404).json({ error: "Notification creation failed" });
@@ -322,7 +322,7 @@ RequestController.handleReturnAction = async (req, res) => {
 				userId: admin._id,
 				requestId: bookRequest._id,
 				message: `You have successfully ${bookRequest.status} the request for ${book.title}`,
-				status: bookRequest.status,
+				//status: bookRequest.status,
 			});
 			if (!adminNotifications) {
 				return res.status(404).json({ error: "Notification creation failed" });
