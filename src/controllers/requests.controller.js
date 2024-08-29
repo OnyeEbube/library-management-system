@@ -145,7 +145,7 @@ RequestController.createRequest = async (req, res) => {
 			const adminNotifications = NotificationService.createNotification({
 				userId: admin._id,
 				requestId: requests._id,
-				message: `You have successfully ${status} the request for ${book.title}`,
+				message: `You have successfully ${requests.status} the request for ${book.title}`,
 				status: requests.status,
 			});
 			if (!adminNotifications) {
