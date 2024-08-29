@@ -137,7 +137,7 @@ RequestController.createRequest = async (req, res) => {
 		}
 		console.log(newNotification);
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(400).json({ error: "No admin found" });
 		}
@@ -180,7 +180,7 @@ RequestController.updateRequest = async (req, res) => {
 			return res.status(404).json({ error: "Notification creation failed" });
 		}
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(404).json({ error: "No admins found" });
 		}
@@ -243,7 +243,7 @@ RequestController.handleRequestAction = async (req, res) => {
 			return res.status(404).json({ error: "Notification creation failed" });
 		}
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(404).json({ error: "No admins found" });
 		}
@@ -313,7 +313,7 @@ RequestController.handleReturnAction = async (req, res) => {
 			return res.status(404).json({ error: "Notification creation failed" });
 		}
 
-		const admins = await UserService.getUsersByRole({ role: "ADMIN" });
+		const admins = await UserService.getUsersByRole("ADMIN");
 		if (!admins) {
 			return res.status(404).json({ error: "No admins found" });
 		}
