@@ -1,8 +1,13 @@
 const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
 const { UserService } = require("../services/auth.service");
+const {
+	NotificationController,
+} = require("../controllers/notifications.controller");
 const RequestController = {};
 const mongoose = require("mongoose");
+const { sendEmail } = require("./functions");
+const { create } = require("../models/user.model");
 
 RequestController.getRequests = async (req, res) => {
 	try {
@@ -107,6 +112,14 @@ RequestController.createRequest = async (req, res) => {
 
 		// Respond with the created request
 		res.status(200).json(requests);
+		const newNotification = await NotificationController.createNotification({
+			userId,
+			message: "Request created",
+			description: "Your request has been created successfully",
+			requestId: requests._id,
+		});
+		NotificationController.createNotification(newNotification);
+		NotificationController.createAdminNotification();
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -159,6 +172,7 @@ RequestController.handleRequestAction = async (req, res) => {
 			if (book.quantity === 0) {
 				book.status = "Unavailable";
 			}
+			bookRequest.borrowedAt = new Date();
 		} else if (status === "Declined") {
 			user.numberOfBooksBorrowed = user.numberOfBooksBorrowed;
 		}

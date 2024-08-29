@@ -11,6 +11,10 @@ UserService.getUserById = async (id) => {
 	return await User.findById({ _id: id }).select("-password").exec();
 };
 
+UserService.getUsersByRole = async (role = "ADMIN") => {
+	return await User.find({ role }).select("-password").exec();
+};
+
 UserService.countUsers = async () => {
 	return await User.countDocuments();
 };

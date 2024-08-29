@@ -39,6 +39,8 @@ const RequestSchema = mongoose.Schema(
 		},
 		returnedAt: { type: Date },
 
+		borrowedAt: { type: Date },
+
 		timeRequested: { type: Date, default: Date.now },
 
 		//time_approved: { type: Date },
