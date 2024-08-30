@@ -37,6 +37,7 @@ router.put(
 	blockUser,
 	AuthController.removeFromFavorites
 );
+router.put("/:id/block", adminAuth, AuthController.blockUser);
 // router.get("/logout", AuthController.logoutUser);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
 router.post("/uploads/:id", verifyUser, AuthController.uploadImage);
