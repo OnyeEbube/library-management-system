@@ -9,7 +9,7 @@ const BookSchema = mongoose.Schema(
 		isbn: {
 			type: String,
 			required: false,
-			default: "",
+			default: "12367",
 		},
 		pages: {
 			type: Number,
@@ -66,6 +66,7 @@ const BookSchema = mongoose.Schema(
 				ref: "User",
 			},
 		],
+		borrowCount: { type: Number, default: 0 },
 	},
 	{
 		timestamps: true,

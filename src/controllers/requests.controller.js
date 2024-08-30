@@ -225,6 +225,7 @@ RequestController.handleRequestAction = async (req, res) => {
 				book.status = "Unavailable";
 			}
 			bookRequest.borrowedAt = new Date();
+			book.borrowCount += 1;
 		} else if (status === "Declined") {
 			user.numberOfBooksBorrowed = user.numberOfBooksBorrowed;
 		}

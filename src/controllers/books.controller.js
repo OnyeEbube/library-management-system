@@ -122,6 +122,22 @@ BookController.searchBooks = async (req, res) => {
 	}
 };
 
+BookController.topChoices = async (req, res) => {
+	try {
+		const topBooks = await BookService.findAll()
+			.sort({ borrowCount: -1 })
+			.limit(limit);
+		if (!topBooks) {
+			return res.status(404).json({ message: "No Data Available" });
+		}
+		res.status(200).json(topBooks);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+
+	return topBooks;
+};
+
 BookController.getAvailableBooks = async (req, res) => {
 	try {
 		const availableBooks = await BookService.getAvailableBooks();
