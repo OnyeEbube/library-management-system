@@ -4,6 +4,7 @@ const {
 	userAuth,
 	verifyUser,
 	adminAuth,
+	blockUser,
 } = require("../middleware/jwt.middleware");
 const router = express.Router();
 
@@ -29,8 +30,13 @@ router.get(
 	AuthController.booksReturnedStat
 );
 //router.get("/count", AuthController.countUsers);
-router.put("/favorites", userAuth, AuthController.addToFavorites);
-router.put("/remove-favorites", userAuth, AuthController.removeFromFavorites);
+router.put("/favorites", userAuth, blockUser, AuthController.addToFavorites);
+router.put(
+	"/remove-favorites",
+	userAuth,
+	blockUser,
+	AuthController.removeFromFavorites
+);
 // router.get("/logout", AuthController.logoutUser);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
 router.post("/uploads/:id", verifyUser, AuthController.uploadImage);

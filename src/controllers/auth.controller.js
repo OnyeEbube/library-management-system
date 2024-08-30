@@ -245,6 +245,20 @@ AuthController.updateUser = async (req, res) => {
 	}
 };
 
+AuthController.blockUser = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const user = await UserService.getUserById(id);
+		if (!user) {
+			return res.status(404).json({ message: "This user does not exist" });
+		}
+		user.activity = "BLOCKED";
+		await user.save();
+		res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
 AuthController.deleteUser = async (req, res) => {
 	try {
 		const { id } = req.params;
@@ -353,12 +367,20 @@ AuthController.resetPassword = async (req, res) => {
 		const { email } = req.body;
 		const { password } = req.body;
 		const { confirmPassword } = req.body;
+		user = await UserService.getUser({ email });
+		if (!user) {
+			return res.status(400).json({ error: "User does not exist" });
+		}
+		const id = user._id;
 		//const { id } = user;
 		if (password !== confirmPassword || !password || !confirmPassword) {
 			return res.status(400).json({ error: "Passwords do not match" });
 		}
 		const hashedPassword = await bcrypt.hash(password, 10);
-		UserService.updateUser(email, { password: hashedPassword });
+		const updatedUser = await UserService.updateUser(id, {
+			$set: { password: hashedPassword },
+		});
+		console.log(updatedUser);
 		res.status(200).json({ message: "Password reset successful" });
 		sendEmail(
 			email,

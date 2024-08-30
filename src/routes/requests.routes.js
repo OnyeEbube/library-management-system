@@ -1,6 +1,10 @@
 const express = require("express");
 const { RequestController } = require("../controllers/requests.controller");
-const { adminAuth, userAuth } = require("../middleware/jwt.middleware");
+const {
+	adminAuth,
+	userAuth,
+	blockUser,
+} = require("../middleware/jwt.middleware");
 const router = express.Router();
 
 //get all requests
@@ -11,9 +15,10 @@ router.get("/:id", adminAuth, RequestController.getRequest);
 router.post(
 	"/special-request",
 	userAuth,
+	blockUser,
 	RequestController.createSpecialRequest
 );
-router.post("/:bookId", userAuth, RequestController.createRequest);
+router.post("/:bookId", userAuth, blockUser, RequestController.createRequest);
 //approve a request
 router.post("/:id/approve", adminAuth, RequestController.handleRequestAction);
 router.post("/:id/cancel", userAuth, RequestController.cancelRequest);

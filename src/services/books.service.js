@@ -8,6 +8,10 @@ BookService.findOne = async (filter) => {
 	return await Book.findOne(filter);
 };
 
+BookService.findTopBooks = async () => {
+	return await Book.find().sort({ borrowCount: -1 });
+};
+
 BookService.countBooks = async (filter = {}) => {
 	return await Book.countDocuments(filter);
 };

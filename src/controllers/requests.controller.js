@@ -106,6 +106,19 @@ RequestController.createRequest = async (req, res) => {
 		if (existingBook.quantity === 0) {
 			return res.status(400).json({ error: "Book is out of stock" });
 		}
+		if (existingBook.status === "Unavailable") {
+			return res.status(400).json({ error: "Book is unavailable" });
+		}
+
+		const userRequests = await RequestService.findAll({
+			userId: req.user.id,
+			bookId: bookId,
+		});
+		if (userRequests.length > 0) {
+			return res
+				.status(400)
+				.json({ error: "You have already requested this book" });
+		}
 
 		// Extract user information
 		const userId = req.user.id;

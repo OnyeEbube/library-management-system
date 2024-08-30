@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { UserService } = require("../services/auth.service.js");
+const { RequestService } = require("../services/requests.service.js");
 
 const adminAuth = async (req, res, next) => {
 	try {
@@ -25,6 +26,28 @@ const adminAuth = async (req, res, next) => {
 		next();
 	} catch (error) {
 		return res.status(401).json({ error: "Invalid token" });
+	}
+};
+
+const blockUser = async (req, res) => {
+	try {
+		const userId = req.user.id || req.params.userId;
+
+		const user = await UserService.getUserById(userId);
+
+		if (!user) {
+			return res.status(404).json({ message: "User not found" });
+		}
+
+		if (user.activity === "BLOCKED") {
+			return res
+				.status(403)
+				.json({ message: "Access denied. User is blocked." });
+		}
+		next();
+	} catch (error) {
+		console.error("Error checking blocked status:", error);
+		res.status(500).json({ message: "Internal server error" });
 	}
 };
 
@@ -80,19 +103,22 @@ const verifyUser = (req, res, next) => {
 	}
 };
 
-/*const borrowLimit = async (req, res, next) => {
+const borrowLimit = async (req, res, next) => {
 	try {
 		const user = req.user;
-		const books = await BookService.getBooks({ status: "BORROWED" });
-		const borrowedBooks = books.filter((book) => book.borrower == user._id);
-		if (borrowedBooks.length >= 5) {
-			return res.status(403).json({ error: "Borrow limit reached" });
+		const requests = await RequestService.findAll({
+			userId: user._id,
+			status: "Approved",
+		});
+		if (requests.length >= 5) {
+			return res
+				.status(400)
+				.json({ error: "You have reached your borrowing limit" });
 		}
 		next();
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
 };
-*/
 
-module.exports = { adminAuth, userAuth, verifyUser };
+module.exports = { adminAuth, userAuth, verifyUser, blockUser, borrowLimit };
