@@ -15,7 +15,8 @@ RequestService.countRequests = async (filter) => {
 };
 
 RequestService.getUserBorrowHistory = async (filter, limit, skip) => {
-	return await Request.find(filter)
+	const query = { ...filter, status: "Approved" };
+	return await Request.find(query)
 		.populate("bookId") // Assuming bookId is a reference to the Book model
 		.limit(limit)
 		.skip(skip)
