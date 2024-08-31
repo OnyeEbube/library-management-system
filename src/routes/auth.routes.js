@@ -14,7 +14,6 @@ router.post("/forgot-password", AuthController.forgotPassword);
 router.post("/forgot-password-mobile", AuthController.forgotPasswordMobile);
 router.get("/verify-otp-mobile", AuthController.verifyOTPMobile);
 router.put("/reset-password", AuthController.resetPassword);
-router.get("/filter", adminAuth, AuthController.getFilteredMembers);
 router.get("/members-only", adminAuth, AuthController.getMembersOnly);
 router.get("/verify-token/:resetToken", AuthController.verifyToken);
 router.get("/", adminAuth, AuthController.getUsers);

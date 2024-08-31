@@ -391,35 +391,6 @@ AuthController.resetPassword = async (req, res) => {
 	}
 };
 
-AuthController.getFilteredMembers = async (req, res) => {
-	try {
-		const filters = req.query;
-		const limit = parseInt(req.query.limit) || 5;
-		const page = parseInt(req.query.page) || 1;
-		const skip = (page - 1) * limit;
-
-		// Apply filters using the query object directly from the User model
-		// Count total filtered users
-		const totalUsers = await UserService.countFilteredUsers(filters, "USER"); // Use `.clone()` to reuse the query
-		const totalPages = Math.ceil(totalUsers / limit);
-
-		// Fetch the filtered users with pagination
-		const users = await UserService.getFilteredMembers(filters, limit, skip);
-
-		res.status(200).json({
-			users,
-			pagination: {
-				totalUsers,
-				totalPages,
-				currentPage: page,
-				limit,
-			},
-		});
-	} catch (error) {
-		console.error("Error:", error.message);
-		res.status(500).json({ message: error.message });
-	}
-};
 AuthController.addToFavorites = async (req, res) => {
 	try {
 		const id = req.user._id;

@@ -48,10 +48,32 @@ UserService.deleteUser = async (id) => {
 	return await User.findByIdAndDelete(id).select("-password");
 };
 
-UserService.getFilteredMembers = async (filters, limit, skip) => {
+UserService.applyFilters = async (filters) => {
 	let query = User.find();
-	query = applyFilters(query, filters);
-	return await query.skip(skip).limit(limit).exec();
+	if (filters.role) {
+		query = query.where("role").equals(filters.role);
+	}
+	if (filters.dateRange) {
+		query = query
+			.where("createdAt")
+			.gte(filters.dateRange.from)
+			.lte(filters.dateRange.to);
+	}
+	if (filters.activity) {
+		query = query.where("activity").equals(filters.activity);
+	}
+	if (filters.numberOfBooksBorrowed) {
+		query = query
+			.where("numberOfBooksBorrowed")
+			.equals(filters.numberOfBooksBorrowed);
+	}
+	if (filters.name) {
+		query = query.where("name").equals(filters.name.trim());
+	}
+	if (filters.memberID) {
+		query = query.where("uniqueId").equals(filters.memberID.trim());
+	}
+	return await query.exec();
 };
 
 UserService.countFilteredUsers = async (filters, role = "USER") => {

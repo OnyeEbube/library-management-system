@@ -14,6 +14,31 @@ RequestService.countRequests = async (filter) => {
 	return await Request.countDocuments(filter);
 };
 
+RequestService.applyFilters = async (filters) => {
+	let query = Request.find(); // Start with a Mongoose query builder
+
+	if (filters.dateRange) {
+		query = query
+			.where("requestedAt")
+			.gte(new Date(filters.dateRange.from))
+			.lte(new Date(filters.dateRange.to));
+	}
+	if (filters.actions) {
+		query = query.where("status").equals(filters.actions);
+	}
+	if (filters.bookName) {
+		query = query.where("bookName").equals(filters.bookName);
+	}
+	if (filters.status) {
+		query = query.where("status").equals(filters.status);
+	}
+	if (filters.name) {
+		query = query.where("userName").equals(filters.name.trim());
+	}
+
+	return await query.exec(); // Execute the query and return the results
+};
+
 RequestService.getUserBorrowHistory = async (filter, limit, skip) => {
 	const query = { ...filter, status: "Approved" };
 	return await Request.find(query)

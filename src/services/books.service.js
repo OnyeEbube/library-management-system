@@ -12,6 +12,32 @@ BookService.findTopBooks = async () => {
 	return await Book.find().sort({ borrowCount: -1 });
 };
 
+BookService.applyFilters = async (filters) => {
+	let query = Book.find();
+	if (filters.dateRange) {
+		query = query
+			.where("createdAt")
+			.gte(filters.dateRange.from)
+			.lte(filters.dateRange.to);
+	}
+	if (filters.year) {
+		query = query.where("year").equals(filters.year);
+	}
+	if (filters.availability) {
+		query = query.where("status").equals(filters.availability);
+	}
+	if (filters.author) {
+		query = query.where("author").equals(filters.author);
+	}
+	if (filters.category) {
+		query = query.where("category").equals(filters.category.trim());
+	}
+	if (filters.email) {
+		query = query.where("email").equals(filters.email.trim());
+	}
+	return await query.exec();
+};
+
 BookService.countBooks = async (filter = {}) => {
 	return await Book.countDocuments(filter);
 };
