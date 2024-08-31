@@ -18,6 +18,11 @@ router.get("/filter", adminAuth, AuthController.getFilteredMembers);
 router.get("/members-only", adminAuth, AuthController.getMembersOnly);
 router.get("/verify-token/:resetToken", AuthController.verifyToken);
 router.get("/", adminAuth, AuthController.getUsers);
+router.get(
+	"/:id/borrow-history",
+	userAuth,
+	AuthController.getUserBorrowHistory
+);
 router.get("/me", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);

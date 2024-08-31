@@ -14,6 +14,14 @@ RequestService.countRequests = async (filter) => {
 	return await Request.countDocuments(filter);
 };
 
+RequestService.getUserBorrowHistory = async (filter, limit, skip) => {
+	return await Request.find(filter)
+		.populate("bookId") // Assuming bookId is a reference to the Book model
+		.limit(limit)
+		.skip(skip)
+		.sort({ borrowedAt: -1 }); // Sorting by borrow date, most recent first
+};
+
 RequestService.findById = async (id) => {
 	return await Request.findById(id).exec();
 };

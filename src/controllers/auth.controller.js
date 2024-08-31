@@ -452,14 +452,56 @@ AuthController.removeFromFavorites = async (req, res) => {
 
 AuthController.getMembersOnly = async (req, res) => {
 	try {
+		const limit = parseInt(req.query.limit) || 5;
+		const page = parseInt(req.query.page) || 1;
+		const skip = (page - 1) * limit;
+		const requests = await RequestService.findAll(limit, skip);
+		if (!requests) {
+			return res.status(404).json({ message: "No members found" });
+		}
+		const totalRequests = await RequestService.countRequests(); // count total books
+		const totalPages = Math.ceil(totalRequests / limit);
 		const members = await UserService.getUsersByRole("USER");
 		if (!members) {
 			return res.status(404).json({ error: "No members found" });
 		}
-		res.status(200).json(members);
+		res.status(200).json({
+			members,
+			pagination: {
+				totalRequests,
+				totalPages,
+				currentPage: page,
+				limit,
+			},
+		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
+AuthController.getUserBorrowHistory = async (req, res) => {
+	try {
+		const limit = req.query.limit || 5;
+		const page = req.query.page || 1;
+		const skip = (page - 1) * limit;
+		const { userId } = req.params;
+		const borrowHistory = await RequestService.getUserBorrowHistory(userId);
+		if (!borrowHistory) {
+			return res.status(404).json({ message: "No books borrowed" });
+		}
+		const totalRequests = await RequestService.countRequests(); // count total books
+		const totalPages = Math.ceil(totalRequests / limit);
+		res.status(200).json({
+			borrowHistory,
+			pagination: {
+				totalRequests,
+				totalPages,
+				currentPage: page,
+				limit,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
 module.exports = { AuthController };
