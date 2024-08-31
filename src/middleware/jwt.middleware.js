@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { UserService } = require("../services/auth.service.js");
 const { RequestService } = require("../services/requests.service.js");
+const { request } = require("express");
 
 const adminAuth = async (req, res, next) => {
 	try {
@@ -29,7 +30,7 @@ const adminAuth = async (req, res, next) => {
 	}
 };
 
-const blockUser = async (req, res) => {
+const blockUser = async (req, res, next) => {
 	try {
 		const userId = req.user.id || req.params.userId;
 
@@ -106,11 +107,17 @@ const verifyUser = (req, res, next) => {
 const borrowLimit = async (req, res, next) => {
 	try {
 		const user = req.user;
-		const requests = await RequestService.findAll({
-			userId: user._id,
-			status: "Approved",
-		});
-		if (requests.length >= 5) {
+		const userId = user._id;
+
+		const requests = await RequestService.findAll(userId);
+		console.log(requests);
+		const count = 0;
+		for (request in requests) {
+			if (request.status === "Approved" || request.status === "Pending") {
+				count++;
+			}
+		}
+		if (count >= 5) {
 			return res
 				.status(400)
 				.json({ error: "You have reached your borrowing limit" });

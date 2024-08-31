@@ -2,24 +2,55 @@ const { RequestService } = require("../services/requests.service");
 const { BookService } = require("../services/books.service");
 const { UserService } = require("../services/auth.service");
 const { NotificationService } = require("../services/notification.service");
+const { exists } = require("../models/user.model");
 const RequestController = {};
 
 RequestController.getRequests = async (req, res) => {
 	try {
-		const limit = req.query.limit;
-		const skip = req.query.skip;
-		const requests = await RequestService.findAll(limit, skip);
-		const totalRequests = await RequestService.countRequests(); // count total books
+		const limit = req.query.limit || 5;
+		const page = req.query.skip || 1;
+		const skip = (page - 1) * limit;
+		const filter = {
+			bookId: { $exists: true },
+		};
+		const requests = await RequestService.findAll(filter, limit, skip);
+		const totalRequests = await RequestService.countRequests(filter); // count total books
 		const totalPages = Math.ceil(totalRequests / limit);
 		if (!requests) {
-			res.status(400).json({ error: "No requests have been added" });
+			return res.status(400).json({ error: "No requests have been added" });
 		}
 		res.status(200).json({
 			requests,
 			pagination: {
 				totalRequests,
 				totalPages,
-				currentPage: parseInt(req.query.page),
+				currentPage: page,
+				limit,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+RequestController.getSpecialRequests = async (req, res) => {
+	try {
+		const limit = req.query.limit || 5;
+		const page = req.query.skip || 1;
+		const skip = (page - 1) * limit;
+		const filter = { bookId: { $exists: false } };
+		const requests = await RequestService.findAll(filter, limit, skip);
+		const totalRequests = await RequestService.countRequests(filter); // count total books
+		const totalPages = Math.ceil(totalRequests / limit);
+		if (!requests) {
+			return res.status(400).json({ error: "No requests have been added" });
+		}
+		res.status(200).json({
+			requests,
+			pagination: {
+				totalRequests,
+				totalPages,
+				currentPage: page,
 				limit,
 			},
 		});
@@ -114,6 +145,7 @@ RequestController.createRequest = async (req, res) => {
 			userId: req.user.id,
 			bookId: bookId,
 		});
+		console.log(userRequests);
 		if (userRequests.length > 0) {
 			return res
 				.status(400)

@@ -17,7 +17,7 @@ router.put("/reset-password", AuthController.resetPassword);
 router.get("/filter", adminAuth, AuthController.getFilteredMembers);
 router.get("/members-only", adminAuth, AuthController.getMembersOnly);
 router.get("/verify-token/:resetToken", AuthController.verifyToken);
-router.get("/", AuthController.getUsers);
+router.get("/", adminAuth, AuthController.getUsers);
 router.get("/me", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);

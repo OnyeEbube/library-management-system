@@ -4,12 +4,18 @@ const {
 	adminAuth,
 	userAuth,
 	blockUser,
+	borrowLimit,
 } = require("../middleware/jwt.middleware");
 const router = express.Router();
 
 //get all requests
 router.get("/", adminAuth, RequestController.getRequests);
 //get a request
+router.get(
+	"/special-requests",
+	adminAuth,
+	RequestController.getSpecialRequests
+);
 router.get("/:id", adminAuth, RequestController.getRequest);
 //create a request
 router.post(
@@ -18,7 +24,13 @@ router.post(
 	blockUser,
 	RequestController.createSpecialRequest
 );
-router.post("/:bookId", userAuth, blockUser, RequestController.createRequest);
+router.post(
+	"/:bookId",
+	userAuth,
+	blockUser,
+	borrowLimit,
+	RequestController.createRequest
+);
 //approve a request
 router.post("/:id/approve", adminAuth, RequestController.handleRequestAction);
 router.post("/:id/cancel", userAuth, RequestController.cancelRequest);

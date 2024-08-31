@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
 	],
 	uniqueId: {
 		type: String,
-		required: true,
+		required: false,
 		unique: true, // Ensure the uniqueId field is unique in the database
 		index: true, // Create an index for the uniqueId field for faster querying
 	},
