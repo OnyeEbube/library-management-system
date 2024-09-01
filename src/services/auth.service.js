@@ -19,8 +19,8 @@ UserService.countUsers = async () => {
 	return await User.countDocuments();
 };
 
-UserService.getUsers = async (limit, skip) => {
-	return await User.find().limit(limit).skip(skip).select("-password");
+UserService.getUsers = async (filter = null, limit, skip) => {
+	return await User.find(filter).limit(limit).skip(skip).select("-password");
 };
 
 UserService.searchMembers = async (query) => {

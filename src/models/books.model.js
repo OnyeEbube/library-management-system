@@ -53,7 +53,15 @@ const BookSchema = mongoose.Schema(
 
 		category: {
 			type: String,
-			enum: ["Romance", "Fiction", "African Fiction", "Horror", "Non-fiction"],
+			enum: [
+				"Romance",
+				"Historical Fiction",
+				"Sci-Fi",
+				"Engineering",
+				"Comedy",
+				"Autobiography",
+				"Thriller",
+			],
 		},
 		availability: {
 			type: String,

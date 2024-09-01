@@ -426,16 +426,13 @@ AuthController.getMembersOnly = async (req, res) => {
 		const limit = parseInt(req.query.limit) || 5;
 		const page = parseInt(req.query.page) || 1;
 		const skip = (page - 1) * limit;
-		const requests = await RequestService.findAll(limit, skip);
-		if (!requests) {
+		filter = { role: "USER" };
+		const members = await UserService.getUsers(filter, limit, skip);
+		if (!members) {
 			return res.status(404).json({ message: "No members found" });
 		}
 		const totalRequests = await RequestService.countRequests(); // count total books
 		const totalPages = Math.ceil(totalRequests / limit);
-		const members = await UserService.getUsersByRole("USER");
-		if (!members) {
-			return res.status(404).json({ error: "No members found" });
-		}
 		res.status(200).json({
 			members,
 			pagination: {
