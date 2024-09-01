@@ -229,7 +229,11 @@ BookController.getRecommendedBooks = async (req, res) => {
 BookController.getRecentlyBorrowedBooksByUser = async (req, res) => {
 	try {
 		const userId = req.user;
-		const books = await BookService.getRecentlyBorrowedBooksByUser(userId);
+		const limit = parseInt(req.query.limit) || 5;
+		const books = await BookService.getRecentlyBorrowedBooksByUser(
+			userId,
+			limit
+		);
 
 		if (!books || books.length === 0) {
 			return res.status(404).json({ message: "No books borrowed" });

@@ -16,7 +16,7 @@ BookService.findNewArrivals = async (limit, skip) => {
 	return await Book.find().sort({ createdAt: -1 }).limit(limit).skip(skip);
 };
 
-BookService.getRecentlyBorrowedBooksByUser = async (userId) => {
+BookService.getRecentlyBorrowedBooksByUser = async (userId, limit) => {
 	const currentDate = new Date();
 	// Fetch recently borrowed books for the user
 	const borrowedBooks = await Book.find({ userId })
