@@ -102,7 +102,7 @@ AuthController.summary = async (req, res) => {
 		const totalUsers = await UserService.countUsers();
 		const availableBooks = await BookService.getAvailableBooks();
 		const totalBorrowedBooks = await BookService.countBorrowedBooks();
-		const damagedBooks = await BookService.countBooks({ status: "Damaged" });
+		const damagedBooks = await BookService.countBooks({ status: "damaged" });
 		if (
 			!totalUsers &&
 			!availableBooks &&
@@ -182,7 +182,8 @@ AuthController.uploadImage = async (req, res) => {
 
 AuthController.searchMembers = async (req, res) => {
 	try {
-		const query = req.query.q;
+		let query = req.query.q;
+		query = query.toLowerCase();
 		const users = await UserService.searchMembers(query);
 		if (!users) {
 			return res.status(404).json({ error: "No user found" });
@@ -252,7 +253,7 @@ AuthController.blockUser = async (req, res) => {
 		if (!user) {
 			return res.status(404).json({ message: "This user does not exist" });
 		}
-		user.activity = "BLOCKED";
+		user.activity = "blocked";
 		await user.save();
 		res.status(200).json(user);
 	} catch (error) {
@@ -426,7 +427,7 @@ AuthController.getMembersOnly = async (req, res) => {
 		const limit = parseInt(req.query.limit) || 5;
 		const page = parseInt(req.query.page) || 1;
 		const skip = (page - 1) * limit;
-		filter = { role: "USER" };
+		filter = { role: "user" };
 		const members = await UserService.getUsers(filter, limit, skip);
 		if (!members) {
 			return res.status(404).json({ message: "No members found" });

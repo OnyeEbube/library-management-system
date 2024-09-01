@@ -5,8 +5,8 @@ const BookController = {};
 
 BookController.getBooks = async (req, res) => {
 	try {
-		const limit = req.query.limit || 5;
-		const page = req.query.page || 1;
+		const limit = parseInt(req.query.limit) || 5;
+		const page = parseInt(req.query.page) || 1;
 		const skip = (page - 1) * limit;
 		const books = await BookService.findAll(limit, skip);
 		const totalBooks = await BookService.countBooks(); // count total books
@@ -27,7 +27,7 @@ BookController.getBooks = async (req, res) => {
 			pagination: {
 				totalBooks,
 				totalPages,
-				currentPage: parseInt(req.query.page),
+				currentPage: page,
 				limit,
 			},
 		});
@@ -144,6 +144,99 @@ BookController.getAvailableBooks = async (req, res) => {
 		res.json({ availableBooks: availableBooks[0]?.totalAvailable || 0 });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
+	}
+};
+
+BookController.getNewArrivals = async (req, res) => {
+	try {
+		const limit = parseInt(req.query.limit) || 5;
+		const page = parseInt(req.query.page) || 1;
+		const skip = (page - 1) * limit;
+		const newArrivals = await BookService.findNewArrivals(limit, skip);
+		const totalBooks = await BookService.countBooks();
+		const totalPages = Math.ceil(totalBooks / limit);
+		if (!newArrivals) {
+			return res.status(404).json({ message: "No books found" });
+		}
+		res.status(200).json({
+			newArrivals,
+			pagination: { totalBooks, totalPages, currentPage: page, limit },
+		});
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+BookController.getMoreBooksLikeThis = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const book = await BookService.findById(id);
+		if (!book) {
+			return res.status(404).json({ message: "Book not found" });
+		}
+		const moreSimilarBooks = await BookService.findMoreBooksLikeThis(book);
+		if (!moreSimilarBooks) {
+			return res.status(404).json({ message: "No similar books found" });
+		}
+		res.status(200).json(moreSimilarBooks);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+BookController.getBooksByCategory = async (req, res) => {
+	try {
+		const limit = parseInt(req.query.limit) || 5;
+		const page = parseInt(req.query.page) || 1;
+		const skip = (page - 1) * limit;
+		let { category } = req.params;
+		category = category.toLowerCase();
+		const data = await BookService.applyFilters(category, limit, skip);
+		const totalData = await BookService.countBooks({ category });
+		const totalPages = Math.ceil(totalData / limit);
+		if (!data || data.length === 0) {
+			return res.status(400).json({ error: "No books with this category" });
+		}
+		res.status(200).json({
+			data,
+			pagination: { totalData, totalPages, currentPage: page, limit },
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+BookController.getRecommendedBooks = async (req, res) => {
+	try {
+		const limit = parseInt(req.query.limit) || 5;
+		const page = parseInt(req.query.page) || 1;
+		const skip = (page - 1) * limit;
+
+		const books = await BookService.findTopBooks(limit, skip);
+		const totalBooks = await BookService.countBooks();
+		const totalPages = Math.ceil(totalBooks / limit);
+		if (!books) {
+			return res.status(404).json({ message: "No books found" });
+		}
+		res.status(200).json({
+			books,
+			pagination: { totalBooks, totalPages, currentPage: page, limit },
+		});
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+BookController.getRecentlyBorrowedBooksByUser = async (req, res) => {
+	try {
+		const userId = req.user;
+		const books = await BookService.getRecentlyBorrowedBooksByUser(userId);
+
+		if (!books || books.length === 0) {
+			return res.status(404).json({ message: "No books borrowed" });
+		}
+		res.status(200).json(books);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
 	}
 };
 

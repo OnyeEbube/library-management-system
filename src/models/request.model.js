@@ -19,11 +19,13 @@ const RequestSchema = mongoose.Schema(
 		userName: {
 			type: String,
 			required: true,
+			set: (val) => val.toLowerCase(),
 		},
 
 		bookName: {
 			type: String,
 			required: false,
+			set: (val) => val.toLowerCase(),
 		},
 
 		bookId: {
@@ -34,8 +36,9 @@ const RequestSchema = mongoose.Schema(
 
 		status: {
 			type: String,
-			enum: ["Pending", "Approved", "Declined", "Returned", "Cancelled"],
-			default: "Pending",
+			enum: ["pending", "approved", "declined", "returned", "cancelled"],
+			default: "pending",
+			set: (val) => val.toLowerCase(),
 		},
 		returnedAt: { type: Date },
 

@@ -30,9 +30,10 @@ const NotificationSchema = mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ["Approved", "Declined", "Pending"],
-			default: "Pending",
+			enum: ["approved", "declined", "pending"],
+			default: "pending",
 			required: false,
+			set: (val) => val.toLowerCase(),
 		},
 
 		createdAt: { type: Date, default: Date.now },

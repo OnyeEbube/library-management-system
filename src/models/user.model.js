@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-	name: String,
-	firstName: String,
-	lastName: String,
+	name: { type: String, set: (val) => val.toLowerCase() },
+	firstName: { type: String, default: "", set: (val) => val.toLowerCase() },
+	lastName: { type: String, default: "", set: (val) => val.toLowerCase() },
 	dateOfBirth: Date,
-	houseAddress: String,
+	houseAddress: { type: String, default: "", set: (val) => val.toLowerCase() },
 	createdAt: {
 		type: Date,
 		default: Date.now,
@@ -39,15 +39,21 @@ const userSchema = new mongoose.Schema({
 	},
 	activity: {
 		type: String,
-		enum: ["ACTIVE", "BLOCKED"],
-		default: "ACTIVE",
+		enum: ["active", "blocked"],
+		default: "active",
+		set: (val) => val.toLowerCase(),
 	},
 	resetToken: String,
 	passwordResetTokenExpiryTime: {
 		type: Date,
 		default: () => Date.now() + 15 * 60 * 1000, // Set expiry time to 15 minutes from now
 	},
-	role: { type: String, enum: ["ADMIN", "USER"] },
+	role: {
+		type: String,
+		enum: ["admin", "user"],
+		set: (val) => val.toLowerCase(),
+		default: "user",
+	},
 
 	booksBorrowed: [
 		{
@@ -61,19 +67,6 @@ const userSchema = new mongoose.Schema({
 		required: false,
 	},
 });
-
-/*userSchema.pre("save", function (next) {
-	const user = this;
-	if (!user.isModified("password")) return next();
-	bcrypt.hash(user.password, 10, function (err, hash) {
-		if (err) {
-			return next(err);
-		}
-		user.password = hash;
-		next();
-	});
-});
-*/
 
 userSchema.index({ name: "text", email: "text" });
 

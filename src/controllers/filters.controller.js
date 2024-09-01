@@ -8,17 +8,23 @@ const { BookService } = require("../services/books.service");
 FilterController.getFilteredData = async (req, res) => {
 	try {
 		const { resource, ...filters } = req.query;
+		const resourceLowerCase = resource.toLowerCase();
+		const filtersLowerCase = {};
+		for (const [key, value] of Object.entries(filters)) {
+			filtersLowerCase[key] =
+				typeof value === "string" ? value.toLowerCase() : value;
+		}
 		let data;
 
-		switch (resource) {
+		switch (resourceLowerCase) {
 			case "users":
-				data = await UserService.applyFilters(filters);
+				data = await UserService.applyFilters(filtersLowerCase);
 				break;
 			case "requests":
-				data = await RequestService.applyFilters(filters);
+				data = await RequestService.applyFilters(filtersLowerCase);
 				break;
 			case "books":
-				data = await BookService.applyFilters(filters);
+				data = await BookService.applyFilters(filtersLowerCase);
 				break;
 			default:
 				return res.status(400).json({ error: "Invalid resource type" });

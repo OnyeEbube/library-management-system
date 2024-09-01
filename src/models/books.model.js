@@ -5,6 +5,7 @@ const BookSchema = mongoose.Schema(
 		title: {
 			type: String,
 			required: [true, "Please enter book name"],
+			set: (val) => val.toLowerCase(),
 		},
 		isbn: {
 			type: String,
@@ -25,12 +26,14 @@ const BookSchema = mongoose.Schema(
 			type: String,
 			required: [true, "Please enter author's name"],
 			default: "",
+			set: (val) => val.toLowerCase(),
 		},
 
 		synopsis: {
 			type: String,
 			required: false,
 			default: "",
+			set: (val) => val.toLowerCase(),
 		},
 
 		quantity: {
@@ -41,8 +44,9 @@ const BookSchema = mongoose.Schema(
 
 		status: {
 			type: String,
-			enum: ["Available", "Unavailable", "Damaged"],
-			default: "Available",
+			enum: ["available", "unavailable", "damaged"],
+			default: "available",
+			set: (val) => val.toLowerCase(),
 		},
 
 		image: {
@@ -54,19 +58,21 @@ const BookSchema = mongoose.Schema(
 		category: {
 			type: String,
 			enum: [
-				"Romance",
-				"Historical Fiction",
-				"Sci-Fi",
-				"Engineering",
-				"Comedy",
-				"Autobiography",
-				"Thriller",
+				"romance",
+				"historical fiction",
+				"sci-fi",
+				"engineering",
+				"comedy",
+				"autobiography",
+				"thriller",
 			],
+			set: (val) => val.toLowerCase(),
 		},
 		availability: {
 			type: String,
-			enum: ["Hard copy", "eBook"],
-			default: "Hard copy",
+			enum: ["hard copy", "ebook"],
+			default: "hard copy",
+			set: (val) => val.toLowerCase(),
 		},
 		borrowedBy: [
 			{
@@ -75,6 +81,7 @@ const BookSchema = mongoose.Schema(
 			},
 		],
 		borrowCount: { type: Number, default: 0 },
+		returnDate: { type: Date, default: null },
 	},
 	{
 		timestamps: true,

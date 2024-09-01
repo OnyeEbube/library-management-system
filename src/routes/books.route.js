@@ -7,9 +7,18 @@ const {
 	verifyUser,
 	blockUser,
 } = require("../middleware/jwt.middleware.js");
+const Book = require("../models/books.model.js");
 
 //get all books
 router.get("/", userAuth, BookController.getBooks);
+router.get("/recommended-books", userAuth, BookController.getRecommendedBooks);
+router.get("/category/:category", userAuth, BookController.getBooksByCategory);
+router.get("/new-arrivals", userAuth, BookController.getNewArrivals);
+router.get(
+	"/recently-borrowed-books",
+	userAuth,
+	BookController.getRecentlyBorrowedBooksByUser
+);
 //search for a book
 router.get("/search", userAuth, BookController.searchBooks);
 router.get("/top-choices", userAuth, BookController.topChoices);

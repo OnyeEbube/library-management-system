@@ -36,7 +36,7 @@ ReviewController.findReview = async (req, res) => {
 
 ReviewController.findReviews = async (req, res) => {
 	try {
-		const filter = req.query;
+		const filter = req.query.lowerCase();
 		const reviews = await ReviewService.findReviews(filter);
 		if (!reviews) {
 			return res.status(404).json({ error: "Reviews not found" });

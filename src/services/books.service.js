@@ -8,11 +8,40 @@ BookService.findOne = async (filter) => {
 	return await Book.findOne(filter);
 };
 
-BookService.findTopBooks = async () => {
-	return await Book.find().sort({ borrowCount: -1 });
+BookService.findTopBooks = async (limit, skip) => {
+	return await Book.find().sort({ borrowCount: -1 }).limit(limit).skip(skip);
 };
 
-BookService.applyFilters = async (filters) => {
+BookService.findNewArrivals = async (limit, skip) => {
+	return await Book.find().sort({ createdAt: -1 }).limit(limit).skip(skip);
+};
+
+BookService.getRecentlyBorrowedBooksByUser = async (userId) => {
+	const currentDate = new Date();
+	// Fetch recently borrowed books for the user
+	const borrowedBooks = await Book.find({ userId })
+		.sort({ borrowDate: -1 }) // Sort by most recent borrow date
+		.limit(limit);
+
+	// Enhance the borrowed books with return date remaining info
+	const enrichedBooks = borrowedBooks.map((book) => {
+		const remainingTime = book.returnDate - currentDate;
+		return {
+			...book.toObject(), // Assuming a Mongoose model
+			remainingDays: Math.ceil(remainingTime / (1000 * 60 * 60 * 24)), // Convert milliseconds to days
+		};
+	});
+
+	return enrichedBooks;
+};
+
+BookService.findMoreBooksLikeThis = async (book) => {
+	return await Book.find({
+		$or: [{ category: book.category }, { author: book.author }],
+	}).limit(10);
+};
+
+BookService.applyFilters = async (filters, limit, skip) => {
 	let query = Book.find();
 	if (filters.dateRange) {
 		query = query
@@ -35,14 +64,14 @@ BookService.applyFilters = async (filters) => {
 	if (filters.email) {
 		query = query.where("email").equals(filters.email.trim());
 	}
-	return await query.exec();
+	return await query.limit(limit).skip(skip).exec();
 };
 
 BookService.countBooks = async (filter = {}) => {
 	return await Book.countDocuments(filter);
 };
-BookService.findAll = async (limit, skip) => {
-	return await Book.find().limit(limit).skip(skip);
+BookService.findAll = async (filter, limit, skip) => {
+	return await Book.find(filter).limit(limit).skip(skip);
 };
 
 BookService.uploadBookCover = async (id, image) => {
