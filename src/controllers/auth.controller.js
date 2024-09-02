@@ -1,6 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const path = require("path");
+//const path = require("path");
+const upload = require("../config/multer");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
@@ -181,23 +182,13 @@ AuthController.uploadImage = async (req, res) => {
 			return res.status(404).json({ error: "User not found" });
 		}
 
-		if (!req.files || req.files.length === 0) {
+		if (!req.files || !req.files.path) {
 			return res.status(400).json({ error: "Please upload an image" });
 		}
-		const imageFile = req.files.imageFile;
-		const uploadPath = path.join(__dirname, "uploads", imageFile.name);
-
-		// Move the file to the "uploads" directory
-		imageFile.mv(uploadPath, async (err) => {
-			if (err) {
-				return res.status(500).json({ error: err.message });
-			}
-		});
-
-		// Save the image path to the database
-		const image = `/uploads/${imageFile.name}`;
-		const uploadedUserImage = await UserService.uploadImage(id, image);
-		res.json(uploadedUserImage);
+		const profileImageUrl = req.file.path;
+		user.image = profileImageUrl;
+		await user.save();
+		res.status(200).json({ message: "Profile picture uploaded successfully" });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}

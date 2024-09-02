@@ -1,6 +1,7 @@
 const Book = require("../models/books.model.js");
 const { BookService } = require("../services/books.service.js");
-const path = require("path");
+const upload = require("../config/multer.js");
+//const path = require("path");
 const BookController = {};
 
 BookController.getBooks = async (req, res) => {
@@ -73,29 +74,18 @@ BookController.uploadBookCover = async (req, res) => {
 			return res.status(404).json({ error: "book not found" });
 		}
 
-		if (!req.files || !req.files.imageFile) {
-			//console.log(req.files);
-			return res.status(400).json({ error: "Please upload an image" });
+		if (!req.file || !req.file.path) {
+			return res.status(400).json({ error: "No file uploaded" });
 		}
-		const imageFile = req.files.imageFile;
-		const uploadPath = path.join(__dirname, "uploads", imageFile.name);
 
-		// Move the file to the "uploads" directory
-		imageFile.mv(uploadPath, async (err) => {
-			if (err) {
-				return res.status(500).json({ error: err.message });
-			}
-
-			// Save the image path to the database
-			const image = `/uploads/${imageFile.name}`;
-			const uploadedBookCover = await BookService.uploadBookCover(id, image);
-			res.json(uploadedBookCover);
-		});
-	} catch (dbRrror) {
-		res.status(500).json({ error: dbRrror.message });
+		const bookCoverUrl = req.file.path;
+		book.image = bookCoverUrl;
+		await book.save();
+		res.status(200).json({ message: "Book cover uploaded successfully" });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
 	}
 };
-
 BookController.updateBook = async (req, res) => {
 	try {
 		const { id } = req.params;

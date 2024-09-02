@@ -1,5 +1,6 @@
 const express = require("express");
 const { AuthController } = require("../controllers/auth.controller");
+const upload = require("../config/multer");
 const {
 	userAuth,
 	verifyUser,
@@ -45,7 +46,12 @@ router.put(
 router.put("/:id/block", adminAuth, AuthController.blockUser);
 router.get("/logout", AuthController.logout);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
-router.post("/uploads/:id", verifyUser, AuthController.uploadImage);
+router.post(
+	"/uploads/:id",
+	upload.single("coverImage"),
+	verifyUser,
+	AuthController.uploadImage
+);
 router.get("/search", userAuth, AuthController.searchMembers);
 
 module.exports = router;

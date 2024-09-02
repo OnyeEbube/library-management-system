@@ -2,8 +2,8 @@ require("dotenv").config();
 const bookRoute = require("./src/routes/books.route.js");
 const express = require("express");
 const app = express();
-const fileUpload = require("express-fileupload");
-const path = require("path");
+//const fileUpload = require("express-fileupload");
+//const path = require("path");
 const authRoutes = require("./src/routes/auth.routes.js");
 const requestRoute = require("./src/routes/requests.routes.js");
 const notificationRoute = require("./src/routes/notifications.route.js");
@@ -24,9 +24,9 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(fileUpload());
-const uploadsPath = path.join(__dirname, "controllers", "uploads");
-app.use("/uploads", express.static(uploadsPath));
+//app.use(fileUpload());
+//const uploadsPath = path.join(__dirname, "controllers", "uploads");
+//app.use("/uploads", express.static(uploadsPath));
 // routes
 app.use("/api/requests", requestRoute);
 app.use("/api/books", bookRoute);
