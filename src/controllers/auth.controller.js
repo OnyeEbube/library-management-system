@@ -185,7 +185,7 @@ AuthController.uploadImage = async (req, res) => {
 		if (!req.file) {
 			return res.status(400).json({ error: "Please upload an image" });
 		}
-		const profileImageUrl = req.file.path;
+		const profileImageUrl = req.file.path || req.file.url;
 		console.log(profileImageUrl);
 		user.image = profileImageUrl;
 		await user.save();
