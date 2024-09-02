@@ -82,6 +82,8 @@ AuthController.loginUser = async (req, res) => {
 			{ _id: loggedinUser._id },
 			{ password: 0 }
 		);
+		user.activity = "active";
+		await user.save();
 		res.status(201).json({
 			message: "Log in successful",
 			user,
@@ -519,6 +521,8 @@ AuthController.logout = async (req, res) => {
 		// Create blacklist entry with token and expiration date
 		const expiresAt = new Date(decoded.exp * 1000); // Convert seconds to milliseconds
 		await Blacklist.create({ token, expiresAt });
+		req.user.activity = "inactive";
+		await req.user.save();
 
 		res.status(200).json({ message: "Logged out successfully" });
 	} catch (error) {

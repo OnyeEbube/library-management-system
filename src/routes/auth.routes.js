@@ -28,7 +28,7 @@ router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
 
 router.get("/me/summary", adminAuth, AuthController.summary);
 router.get("/me/member-stat", adminAuth, AuthController.newMembersStat);
-router.get("/member-stat-two", adminAuth, AuthController.membersStat);
+router.get("/me/member-stat-two", adminAuth, AuthController.membersStat);
 router.get(
 	"/me/books-returned-stat",
 	adminAuth,
