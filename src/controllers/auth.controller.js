@@ -182,10 +182,11 @@ AuthController.uploadImage = async (req, res) => {
 			return res.status(404).json({ error: "User not found" });
 		}
 
-		if (!req.files || !req.files.path) {
+		if (!req.file) {
 			return res.status(400).json({ error: "Please upload an image" });
 		}
 		const profileImageUrl = req.file.path;
+		console.log(profileImageUrl);
 		user.image = profileImageUrl;
 		await user.save();
 		res.status(200).json({ message: "Profile picture uploaded successfully" });
