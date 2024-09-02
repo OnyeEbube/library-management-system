@@ -42,7 +42,7 @@ router.put(
 	AuthController.removeFromFavorites
 );
 router.put("/:id/block", adminAuth, AuthController.blockUser);
-// router.get("/logout", AuthController.logoutUser);
+router.get("/logout", AuthController.logout);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
 router.post("/uploads/:id", verifyUser, AuthController.uploadImage);
 router.get("/search", userAuth, AuthController.searchMembers);

@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const { UserService } = require("../services/auth.service");
 const { BookService } = require("../services/books.service");
 const { RequestService } = require("../services/requests.service");
+const Blacklist = require("../models/blacklist.model");
 
 const baseUrl = process.env.FRONTEND_BASE_URL;
 const {
@@ -212,8 +213,9 @@ AuthController.getUsers = async (req, res) => {
 	try {
 		const limit = req.query.limit || 5;
 		const page = req.query.page || 1;
+		const filter = null;
 		const skip = (page - 1) * limit;
-		const users = await UserService.getUsers(limit, skip);
+		const users = await UserService.getUsers(filter, limit, skip);
 		const totalUsers = await UserService.countUsers(); // count total books
 		const totalPages = Math.ceil(totalUsers / limit);
 		if (!users) {
@@ -473,4 +475,35 @@ AuthController.getUserBorrowHistory = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
+
+AuthController.logout = async (req, res) => {
+	try {
+		const authHeader = req.headers.authorization;
+		if (!authHeader) {
+			return res
+				.status(400)
+				.json({ message: "Authorization header is missing" });
+		}
+
+		const token = authHeader.split(" ")[1];
+		if (!token) {
+			return res.status(400).json({ message: "Token is missing" });
+		}
+
+		// Decode token to get its expiration date
+		const decoded = jwt.decode(token);
+		if (!decoded || !decoded.exp) {
+			return res.status(400).json({ message: "Invalid token" });
+		}
+
+		// Create blacklist entry with token and expiration date
+		const expiresAt = new Date(decoded.exp * 1000); // Convert seconds to milliseconds
+		await Blacklist.create({ token, expiresAt });
+
+		res.status(200).json({ message: "Logged out successfully" });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 module.exports = { AuthController };

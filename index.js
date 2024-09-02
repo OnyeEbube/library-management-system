@@ -8,6 +8,7 @@ const authRoutes = require("./src/routes/auth.routes.js");
 const requestRoute = require("./src/routes/requests.routes.js");
 const notificationRoute = require("./src/routes/notifications.route.js");
 const filtersRoute = require("./src/routes/filters.routes");
+const Blacklist = require("./src/models/blacklist.model.js"); // Adjust path as necessary
 const { connect } = require("mongoose");
 const reviewRoute = require("./src/routes/review.routes.js");
 const url = process.env.URL;
@@ -37,6 +38,18 @@ app.use("/api/filter", filtersRoute);
 app.get("/", async (req, res) => {
 	res.send("Hello from Node API Updated");
 });
+
+const removeExpiredTokens = async () => {
+	const now = new Date();
+	try {
+		await Blacklist.deleteMany({ expiresAt: { $lt: now } });
+		console.log("Expired tokens removed");
+	} catch (error) {
+		console.error("Error removing expired tokens:", error);
+	}
+};
+
+setInterval(removeExpiredTokens, 60 * 120 * 1000); // 2 hours
 
 connect(url)
 	.then(() => {

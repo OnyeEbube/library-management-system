@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { UserService } = require("../services/auth.service.js");
 const { RequestService } = require("../services/requests.service.js");
 const { request } = require("express");
+const Blacklist = require("../models/blacklist.model.js");
 
 const adminAuth = async (req, res, next) => {
 	try {
@@ -9,6 +10,11 @@ const adminAuth = async (req, res, next) => {
 		if (!token) {
 			return res.status(401).json({ error: "No token provided" });
 		}
+		const blacklistedToken = await Blacklist.findOne({ token });
+		if (blacklistedToken) {
+			return res.status(401).json({ error: "Token has been blacklisted" });
+		}
+		console.log(blacklistedToken);
 
 		const decoded = jwt.verify(token, process.env.SECRET_KEY);
 		console.log(decoded);
@@ -57,6 +63,10 @@ const userAuth = async (req, res, next) => {
 		const token = req.header("Authorization").replace("Bearer ", "");
 		if (!token) {
 			return res.status(401).json({ error: "No token provided" });
+		}
+		const blacklistedToken = await Blacklist.findOne({ token });
+		if (blacklistedToken) {
+			return res.status(401).json({ error: "Token has been blacklisted" });
 		}
 
 		const decoded = jwt.verify(token, process.env.SECRET_KEY);
