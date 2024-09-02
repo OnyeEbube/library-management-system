@@ -1,14 +1,21 @@
 const express = require("express");
 const { AuthController } = require("../controllers/auth.controller");
-const upload = require("../config/multer");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const {
 	userAuth,
 	verifyUser,
 	adminAuth,
 	blockUser,
 } = require("../middleware/jwt.middleware");
+const { verify } = require("jsonwebtoken");
 const router = express.Router();
 
+router.post(
+	"/uploads/:id",
+	upload.single("profileImage"),
+	AuthController.uploadImage
+);
 router.post("/register", AuthController.createUser);
 router.post("/login", AuthController.loginUser);
 router.post("/forgot-password", AuthController.forgotPassword);
@@ -46,12 +53,7 @@ router.put(
 router.put("/:id/block", adminAuth, AuthController.blockUser);
 router.get("/logout", AuthController.logout);
 //router.get("/uploads/:fileName", AuthController.getProfilePicture);
-router.post(
-	"/uploads/:id",
-	upload.single("coverImage"),
-	verifyUser,
-	AuthController.uploadImage
-);
+
 router.get("/search", userAuth, AuthController.searchMembers);
 
 module.exports = router;

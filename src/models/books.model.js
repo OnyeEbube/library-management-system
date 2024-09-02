@@ -65,6 +65,7 @@ const BookSchema = mongoose.Schema(
 				"comedy",
 				"autobiography",
 				"thriller",
+				"fiction",
 			],
 			set: (val) => val.toLowerCase(),
 		},

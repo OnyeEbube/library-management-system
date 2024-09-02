@@ -16,12 +16,9 @@ const port = process.env.PORT;
 const cors = require("cors");
 
 // middleware
-app.use(
-	cors(/*{
-		origin: "http://localhost:5173",
-		credentials: true,
-	}*/)
-);
+/*app.use(
+	cors({});
+*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(fileUpload());
@@ -59,5 +56,8 @@ connect(url)
 		});
 	})
 	.catch((error) => {
-		console.log(error);
+		console.error("Failed to connect to database:", error.message);
 	});
+
+app.keepAliveTimeout = 120000; // 120 seconds
+app.headersTimeout = 120000;

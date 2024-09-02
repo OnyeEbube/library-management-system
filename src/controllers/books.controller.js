@@ -1,6 +1,7 @@
 const Book = require("../models/books.model.js");
 const { BookService } = require("../services/books.service.js");
 const upload = require("../config/multer.js");
+const cloudinary = require("cloudinary").v2;
 //const path = require("path");
 const BookController = {};
 
@@ -69,21 +70,26 @@ BookController.createBook = async (req, res) => {
 BookController.uploadBookCover = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const book = await BookService.findById(id);
-		if (!book) {
-			return res.status(404).json({ error: "book not found" });
+		if (!req.file) {
+			return res.status(400).json({ message: "No file uploaded" });
 		}
 
-		if (!req.file || !req.file.path) {
-			return res.status(400).json({ error: "No file uploaded" });
-		}
+		// Upload to Cloudinary
+		const result = await cloudinary.uploader.upload(req.file.path, {
+			folder: "book_cover_images",
+		});
 
-		const bookCoverUrl = req.file.path;
-		book.image = bookCoverUrl;
+		// Save the URL to the user's profile
+		const book = await BookService.findById(id); // Assume you have user ID in req.user.id
+		book.image = result.secure_url;
 		await book.save();
-		res.status(200).json({ message: "Book cover uploaded successfully" });
+
+		res.status(200).json({
+			message: "Book cover uploaded successfully",
+			url: result.secure_url,
+		});
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		res.status(500).json({ message: "Error uploading image", error });
 	}
 };
 BookController.updateBook = async (req, res) => {
