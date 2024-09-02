@@ -124,6 +124,26 @@ AuthController.summary = async (req, res) => {
 	}
 };
 
+AuthController.membersStat = async (req, res) => {
+	try {
+		const activeMembers = await UserService.getActiveMembersCount();
+		const inactiveMembers = await UserService.getInactiveMembersCount();
+		const blockedMembers = await UserService.getBlockedMembersCount();
+		const newMembers = await UserService.getRecentlyAddedMembersCount();
+		if (!activeMembers && !inactiveMembers && !blockedMembers && !newMembers) {
+			return res.status(404).json({ error: "No data found" });
+		}
+		res.status(200).json({
+			activeMembers,
+			inactiveMembers,
+			blockedMembers,
+			newMembers,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 AuthController.newMembersStat = async (req, res) => {
 	const { period = "month" } = req.query;
 	const { startDate, endDate } = calculateDateRange(period);

@@ -39,8 +39,8 @@ const userSchema = new mongoose.Schema({
 	},
 	activity: {
 		type: String,
-		enum: ["active", "blocked"],
-		default: "active",
+		enum: ["active", "blocked", "inactive"],
+		default: "inactive",
 		set: (val) => val.toLowerCase(),
 	},
 	resetToken: String,

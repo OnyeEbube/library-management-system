@@ -8,7 +8,8 @@ BookController.getBooks = async (req, res) => {
 		const limit = parseInt(req.query.limit) || 5;
 		const page = parseInt(req.query.page) || 1;
 		const skip = (page - 1) * limit;
-		const books = await BookService.findAll(limit, skip);
+		const filter = null;
+		const books = await BookService.findAll(filter, limit, skip);
 		const totalBooks = await BookService.countBooks(); // count total books
 		const totalPages = Math.ceil(totalBooks / limit); // calculate total pages
 		if (!books) {

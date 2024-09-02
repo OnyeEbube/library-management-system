@@ -38,6 +38,23 @@ UserService.updateUser = async (id, data) => {
 	);
 };
 
+UserService.getActiveMembersCount = async () => {
+	return await User.countDocuments({ activity: "active" });
+};
+
+UserService.getInactiveMembersCount = async () => {
+	return await User.countDocuments({ activity: "inactive" });
+};
+
+UserService.getBlockedMembersCount = async () => {
+	return await User.countDocuments({ activity: "blocked" });
+};
+
+UserService.getRecentlyAddedMembersCount = async () => {
+	const thirtyDaysAgo = new Date();
+	thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+	return await User.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
+};
 UserService.uploadImage = async (id, image) => {
 	return await User.findByIdAndUpdate(id, { image }, { new: true }).select(
 		"-password"
