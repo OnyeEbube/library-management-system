@@ -32,6 +32,8 @@ const userSchema = new mongoose.Schema({
 	image: {
 		type: String,
 		required: false,
+		default:
+			"https://res.cloudinary.com/dg1prpbhk/image/upload/v1725476106/default_apfbot.jpg",
 	},
 	numberOfBooksBorrowed: {
 		type: Number,
