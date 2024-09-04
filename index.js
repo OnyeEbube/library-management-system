@@ -8,6 +8,7 @@ const authRoutes = require("./src/routes/auth.routes.js");
 const requestRoute = require("./src/routes/requests.routes.js");
 const notificationRoute = require("./src/routes/notifications.route.js");
 const filtersRoute = require("./src/routes/filters.routes");
+const dropdownsRoute = require("./src/routes/dropdowns.routes");
 const Blacklist = require("./src/models/blacklist.model.js"); // Adjust path as necessary
 const { connect } = require("mongoose");
 const reviewRoute = require("./src/routes/review.routes.js");
@@ -29,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoute);
 app.use("/api/notifications", notificationRoute);
 app.use("/api/filter", filtersRoute);
+app.use("/api/dropdowns", dropdownsRoute);
 
 app.get("/", async (req, res) => {
 	res.send("Hello from Node API Updated");
