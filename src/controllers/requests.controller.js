@@ -38,7 +38,7 @@ RequestController.getSpecialRequests = async (req, res) => {
 		const limit = req.query.limit || 5;
 		const page = req.query.skip || 1;
 		const skip = (page - 1) * limit;
-		const filter = { bookId: { $exists: false } };
+		const filter = { isSpecialRequest: true };
 		const requests = await RequestService.findAll(filter, limit, skip);
 		const totalRequests = await RequestService.countRequests(filter); // count total books
 		const totalPages = Math.ceil(totalRequests / limit);
@@ -66,6 +66,7 @@ RequestController.getRequest = async (req, res) => {
 		if (!request) {
 			return res.status(400).json({ error: "Request does not exist" });
 		}
+
 		res.status(200).json(request);
 	} catch (error) {
 		res.status(500).json(error);
@@ -94,6 +95,7 @@ RequestController.createSpecialRequest = async (req, res) => {
 			bookName,
 			author,
 			category,
+			isSpecialRequest: true,
 		};
 		const request = await RequestService.createRequest(requestPayload);
 
@@ -169,6 +171,7 @@ RequestController.createRequest = async (req, res) => {
 			userId,
 			userName,
 			bookId,
+			bookName: existingBook.title,
 		};
 		const requests = await RequestService.createRequest(requestPayload);
 		if (!requests) {

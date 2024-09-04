@@ -22,6 +22,11 @@ const RequestSchema = mongoose.Schema(
 			set: (val) => val.toLowerCase(),
 		},
 
+		isSpecialRequest: {
+			type: Boolean,
+			default: false, // Default to false, set to true for special requests
+		},
+
 		bookName: {
 			type: String,
 			required: false,
@@ -31,7 +36,9 @@ const RequestSchema = mongoose.Schema(
 		bookId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Book",
-			required: false,
+			required: function () {
+				return !this.isSpecialRequest; // Required for normal requests, not for special requests
+			},
 		},
 
 		status: {

@@ -42,9 +42,6 @@ AuthController.createUser = async (req, res) => {
 			role,
 			uniqueId,
 		});
-		const token = jwt.sign({ _id: createdUser._id }, process.env.SECRET_KEY, {
-			expiresIn: process.env.SECRET_KEY_EXPIRES_IN,
-		});
 		const user = await UserService.getUser(
 			{ _id: createdUser._id },
 			{ password: 0 }
@@ -52,7 +49,6 @@ AuthController.createUser = async (req, res) => {
 		res.status(201).json({
 			message: "Sign up successful",
 			user,
-			token,
 		});
 		sendEmail(email, "Sign up successful", "Welcome to LMS");
 	} catch (error) {
