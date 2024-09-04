@@ -215,10 +215,24 @@ AuthController.searchMembers = async (req, res) => {
 	}
 };
 
-AuthController.getUser = async (req, res) => {
+AuthController.getUser1 = async (req, res) => {
 	try {
 		console.log(req.user);
-		const { id } = req.params || req.user;
+		const { id } = req.params;
+		const user = await UserService.getUserById(id);
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
+		}
+		res.json(user);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+AuthController.getUser2 = async (req, res) => {
+	try {
+		console.log(req.user);
+		const { id } = req.user;
 		const user = await UserService.getUserById(id);
 		if (!user) {
 			return res.status(404).json({ error: "User not found" });

@@ -30,8 +30,8 @@ router.get(
 	userAuth,
 	AuthController.getUserBorrowHistory
 );
-router.get("/me", userAuth, AuthController.getUser);
-router.get("/:id", userAuth, AuthController.getUser);
+router.get("/me", userAuth, AuthController.getUser2);
+router.get("/:id", userAuth, AuthController.getUser1);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
 
