@@ -31,6 +31,7 @@ router.get(
 	AuthController.getUserBorrowHistory
 );
 router.get("/me", userAuth, AuthController.getUser);
+router.get("/:id", userAuth, AuthController.getUser);
 router.delete("/:id", adminAuth, AuthController.deleteUser);
 router.patch("/:id", adminAuth, userAuth, AuthController.updateUser);
 
