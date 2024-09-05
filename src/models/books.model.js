@@ -53,7 +53,7 @@ const BookSchema = mongoose.Schema(
 			type: String,
 			required: false,
 			default:
-				"https://res.cloudinary.com/dg1prpbhk/image/upload/c_crop,ar_9:16/v1725476244/default_1_pwvxti.jpg",
+				"https://res.cloudinary.com/dg1prpbhk/image/upload/c_crop,w_93,h_114/v1725476244/default_1_pwvxti.jpg",
 		},
 
 		category: {
